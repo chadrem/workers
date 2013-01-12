@@ -77,7 +77,7 @@ The pool class takes a few options (defaults below):
     pool = Workers::Pool.new(
       :size => 20,                     # Number of threads to create.
       :logger => nil                   # Ruby Logger instance.
-      :worker_class => Workers::Worker # Class of worker to create for this pool.
+      :worker_class => Workers::Worker # Class of worker to use for this pool.
     
 ## Contributing
 
