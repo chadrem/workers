@@ -35,7 +35,7 @@ Or install it yourself as:
       puts "Worker thread #{Thread.current.object_id} is shutting down."
     end
     
-    # Wait for the workers to finish.
+    # Wait for the workers to shutdown.
     pool.join
 
 ## Advanced Usage
@@ -67,7 +67,7 @@ The Worker class is designed to be customized.
       puts "Worker thread #{Thread.current.object_id} is shutting down."
     end
     
-    # Wait for it to finish working and shutdown.
+    # Wait for the workers to shutdown.
     pool.join
     
 ## Pool Options
