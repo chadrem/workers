@@ -5,7 +5,14 @@ module Workers
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
       @input_queue = options[:input_queue] || Queue.new
+
       @thread = Thread.new { start_event_loop }
+    end
+
+    def enqueue(command, data)
+      @input_queue.push(Event.new(command, data))
+
+      return nil
     end
 
     def perform(options = {}, &block)
@@ -29,10 +36,6 @@ module Workers
     end
 
     private
-
-    def enqueue(command, data)
-      @input_queue.push(Event.new(command, data))
-    end
 
     def start_event_loop
       while true
