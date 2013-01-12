@@ -18,7 +18,24 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+    # Initialize a worker pool.
+    pool = Workers::Pool.new
+    
+    # Perform some work in the background.
+    100.times do
+      pool.perform do
+        sleep(rand(3))
+        puts "Hello World from thread #{Thread.current.object_id}"
+      end
+    end
+    
+    # Tell the workers to shutdown.
+    pool.shutdown do
+      puts "worker thread #{Thread.current.object_id} is shutting down."
+    end
+    
+    # Wait for the workers to finish.
+    pool.join
 
 ## Contributing
 
