@@ -1,6 +1,7 @@
 # Workers
 
-TODO: Write a gem description
+Workers is a Ruby gem for performing work in background threads.
+Design goals include high performance, low latency, simple API, and customizability.
 
 ## Installation
 
@@ -16,7 +17,7 @@ Or install it yourself as:
 
     $ gem install workers
 
-## Usage
+## Basic Usage
 
     # Initialize a worker pool.
     pool = Workers::Pool.new
@@ -37,6 +38,36 @@ Or install it yourself as:
     # Wait for the workers to finish.
     pool.join
 
+## Advanced Usage
+
+The Worker class is designed to be customized.
+
+    # Create a custom worker class that handles custom commands.
+    class CustomWorker < Workers::Worker
+      private
+      def process_event(event)
+        case event.command
+        when :custom
+          puts "Worker received custom event: #{event.data}"
+          sleep(1)
+        end
+      end
+    end
+    
+    # Create an instance of your custom worker.
+    worker = CustomWorker.new
+    
+    # Tell the worker to do some work.
+    5.times do |i|
+      worker.enqueue(:custom, i)
+    end
+    
+    # Tell your worker to shutdown.
+    worker.shutdown
+    
+    # Wait for it to finish working and shutdown.
+    worker.join
+    
 ## Contributing
 
 1. Fork it
