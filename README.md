@@ -26,13 +26,13 @@ Or install it yourself as:
     100.times do
       pool.perform do
         sleep(rand(3))
-        puts "Hello World from thread #{Thread.current.object_id}"
+        puts "Hello world from thread #{Thread.current.object_id}"
       end
     end
     
     # Tell the workers to shutdown.
     pool.shutdown do
-      puts "worker thread #{Thread.current.object_id} is shutting down."
+      puts "Worker thread #{Thread.current.object_id} is shutting down."
     end
     
     # Wait for the workers to finish.
@@ -47,26 +47,28 @@ The Worker class is designed to be customized.
       private
       def process_event(event)
         case event.command
-        when :custom
+        when :my_custom
           puts "Worker received custom event: #{event.data}"
           sleep(1)
         end
       end
     end
     
-    # Create an instance of your custom worker.
-    worker = CustomWorker.new
+    # Create a pool that uses your custom worker class.
+    pool = Workers::Pool.new(:worker_class => CustomWorker)
     
-    # Tell the worker to do some work.
-    5.times do |i|
-      worker.enqueue(:custom, i)
+    # Tell the workers to do some work using custom events.
+    100.times do |i|
+      pool.enqueue(:my_custom, i)
     end
     
-    # Tell your worker to shutdown.
-    worker.shutdown
+    # Tell the workers to shutdown.
+    pool.shutdown do
+      puts "Worker thread #{Thread.current.object_id} is shutting down."
+    end
     
     # Wait for it to finish working and shutdown.
-    worker.join
+    pool.join
     
 ## Contributing
 
