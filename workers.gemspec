@@ -8,9 +8,9 @@ Gem::Specification.new do |gem|
   gem.version       = Workers::VERSION
   gem.authors       = ["Chad Remesch"]
   gem.email         = ["chad@remesch.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""
+  gem.description   = %q{Simple to use Ruby workers for performing work in background threads.}
+  gem.summary       = %q{Simple to use Ruby workers featuring high performance, simple to use API, customizable workers, and thread pooling.}
+  gem.homepage      = "https://github.com/chadrem/workers"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
