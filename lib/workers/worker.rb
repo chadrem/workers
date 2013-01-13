@@ -15,13 +15,13 @@ module Workers
       return nil
     end
 
-    def perform(options = {}, &block)
+    def perform(&block)
       enqueue(:perform, block)
 
       return nil
     end
 
-    def shutdown(options = {}, &block)
+    def shutdown(&block)
       enqueue(:shutdown, block)
 
       return nil
