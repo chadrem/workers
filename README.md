@@ -1,7 +1,7 @@
 # Workers
 
 Workers is a Ruby gem for performing work in background threads.
-Design goals include high performance, low latency, simple API, and customizability, and multi-layered architecture.
+Design goals include high performance, low latency, simple API, customizability, and multi-layered architecture.
 
 ## Installation
 
