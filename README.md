@@ -40,7 +40,7 @@ Or install it yourself as:
 
 ## Advanced Usage
 
-The Worker class is designed to be customized.
+The Worker class is designed to be customized through inheritence and its event system:
 
     # Create a custom worker class that handles custom commands.
     class CustomWorker < Workers::Worker
