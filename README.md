@@ -70,14 +70,22 @@ The Worker class is designed to be customized.
     # Wait for the workers to shutdown.
     pool.join
     
-## Pool Options
+## Options
 
-The pool class takes a few options (defaults below):
+The pool class (defaults below):
 
     pool = Workers::Pool.new(
       :size => 20,                     # Number of threads to create.
-      :logger => nil                   # Ruby Logger instance.
+      :logger => nil,                  # Ruby Logger instance.
       :worker_class => Workers::Worker # Class of worker to use for this pool.
+    )
+
+The worker class (defaults below):
+
+    worker = Workers::Worker.new(
+      :logger => nil,                  # Ruby Logger instance.
+      :input_queue => nil              # Ruby Queue used for input events.
+    )
     
 ## Contributing
 
