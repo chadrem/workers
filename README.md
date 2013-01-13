@@ -86,7 +86,34 @@ The worker class (defaults below):
       :logger => nil,                  # Ruby Logger instance.
       :input_queue => nil              # Ruby Queue used for input events.
     )
+
+## TODO
+
+Currently, the Workers gem has event driven workers and thread pooling.
+Using these building blocks I intend to create higher classes called TaskGroup and Task.
+Below is a prototype design (not yet implemented):
+
+    # Create a task group (it contains a pool of workers).
+    group = Workers::TaskGroup.new
     
+    # Add tasks to the group.
+    100.times do |i|
+      group.add(i) do
+        i * i
+      end
+    end
+    
+    # Execute the tasks (blocks until the tasks complete).
+    group.run
+    
+    # Review the results.
+    group.tasks.each do |t|
+      t.succeeded? # True or false (false if an exception occurred).
+      t.args       # Input arguments (the value of i in this example).
+      t.result     # Output value (the result of i * i in this example).
+      t.exception  # The exception if one exists.
+    end
+
 ## Contributing
 
 1. Fork it
