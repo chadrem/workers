@@ -1,7 +1,7 @@
 # Workers
 
 Workers is a Ruby gem for performing work in background threads.
-Design goals include high performance, low latency, simple API, and customizability.
+Design goals include high performance, low latency, simple API, and customizability, and multi-layered architecture.
 
 ## Installation
 
@@ -21,7 +21,7 @@ Or install it yourself as:
 
     # Initialize a worker pool.
     pool = Workers::Pool.new
-    
+
     # Perform some work in the background.
     100.times do
       pool.perform do
@@ -29,12 +29,12 @@ Or install it yourself as:
         puts "Hello world from thread #{Thread.current.object_id}"
       end
     end
-    
+
     # Tell the workers to shutdown.
     pool.shutdown do
       puts "Worker thread #{Thread.current.object_id} is shutting down."
     end
-    
+
     # Wait for the workers to shutdown.
     pool.join
 
@@ -53,23 +53,23 @@ The Worker class is designed to be customized.
         end
       end
     end
-    
+
     # Create a pool that uses your custom worker class.
     pool = Workers::Pool.new(:worker_class => CustomWorker)
-    
+
     # Tell the workers to do some work using custom events.
     100.times do |i|
       pool.enqueue(:my_custom, i)
     end
-    
+
     # Tell the workers to shutdown.
     pool.shutdown do
       puts "Worker thread #{Thread.current.object_id} is shutting down."
     end
-    
+
     # Wait for the workers to shutdown.
     pool.join
-    
+
 ## Options
 
 The pool class (defaults below):
@@ -95,17 +95,17 @@ Below is a prototype design (not yet implemented):
 
     # Create a task group (it contains a pool of workers).
     group = Workers::TaskGroup.new
-    
+
     # Add tasks to the group.
     100.times do |i|
       group.add(i) do
         i * i
       end
     end
-    
+
     # Execute the tasks (blocks until the tasks complete).
     group.run
-    
+
     # Review the results.
     group.tasks.each do |t|
       t.succeeded? # True or false (false if an exception occurred).
@@ -113,6 +113,11 @@ Below is a prototype design (not yet implemented):
       t.result     # Output value (the result of i * i in this example).
       t.exception  # The exception if one exists.
     end
+
+TaskGroup and Task can then be used to build an easy to use parallel map.
+Care will have to taken regarding global data and the thread safety of data structures:
+
+    Workers.map([1, 2, 3, 4]) { |i| i * i }
 
 ## Contributing
 
