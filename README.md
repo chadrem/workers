@@ -87,11 +87,12 @@ The worker class (defaults below):
       :input_queue => nil              # Ruby Queue used for input events.
     )
 
-## TODO
+## TODO - not yet implemented features
 
-Currently, the Workers gem has event driven workers and thread pooling.
-Using these building blocks I intend to create higher classes called TaskGroup and Task.
-Below is a prototype design (not yet implemented):
+### Tasks
+
+Tasks and task groups build on top of worker pools.
+They provide a means of parallelizing expensive computations and collecing the results:
 
     # Create a task group (it contains a pool of workers).
     group = Workers::TaskGroup.new
@@ -118,6 +119,22 @@ TaskGroup and Task can then be used to build an easy to use parallel map.
 Care will have to taken regarding global data and the thread safety of data structures:
 
     Workers.map([1, 2, 3, 4]) { |i| i * i }
+
+### Timers
+
+Timers provide a means of delayed task execution and a way to signal workers to do future work:
+
+    # Create a one shot timer.
+    timer = Workers::Timer.new(5) do
+      puts 'Hello world'
+    end
+    
+    # Create a periodic timer.
+    timer = Workers::PeriodicTimer.new(5) do
+      puts 'Hello world many times'
+    end
+
+The timer callbacks will execute using a Workers::Pool in case they contain blocking operations.
 
 ## Contributing
 
