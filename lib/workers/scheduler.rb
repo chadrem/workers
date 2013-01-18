@@ -56,7 +56,6 @@ module Workers
       end
 
       return nil
-    rescue Exception => e
     end
 
     def process_overdue
