@@ -86,6 +86,23 @@ Timers provide a way to execute code in the future:
     sleep 5
     timer.cancel
 
+## Schedulers
+
+Schedulers are what trigger a Timer to fire.
+The system has a global default scheduler which should meet most needs (Workers.scheduler).
+You can create additional or custom ones as necessary:
+
+    # Create a workers pool with a larger than default thread count (optional).
+    pool = Workers::Pool.new(:size => 100)
+    
+    # Create a scheduler.
+    scheduler = Workers::Scheduler.new(:pool => pool)
+    
+    # Create a timer that uses the above scheduler.
+    timer = Workers::Timer.new(:scheduler => scheduler) do
+      puts 'Hello world'
+    end
+
 Callbacks execute using a Workers::Pool in case they contain blocking operations.
 
 ## Options (defaults below):
