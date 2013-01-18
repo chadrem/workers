@@ -103,8 +103,6 @@ You can create additional or custom ones as necessary:
       puts 'Hello world'
     end
 
-Callbacks execute using a Workers::Pool in case they contain blocking operations.
-
 ## Options (defaults below):
 
     pool = Workers::Pool.new(
