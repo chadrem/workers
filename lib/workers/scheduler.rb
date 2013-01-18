@@ -1,6 +1,7 @@
 module Workers
   class Scheduler
     def initialize(options = {})
+      @logger = options[:logger]
       @pool = options[:pool] || Workers::Pool.new
       @schedule = SortedSet.new
       @mutex = Mutex.new
