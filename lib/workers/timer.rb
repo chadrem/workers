@@ -35,13 +35,10 @@ module Workers
 
     def fire
       @mutex.synchronize do
-        begin
-          @callback.call if @callback
-        rescue Exception => e
-        end
-
-        return nil
+        @callback.call if @callback
       end
+
+      return nil
     end
 
     def cancel
