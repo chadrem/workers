@@ -85,7 +85,7 @@ Timers provide a way to execute code in the future:
     end
     
     # Let the timer print some lines.
-    sleep 5
+    sleep(5)
     
     # Shutdown the timer.
     timer.cancel
