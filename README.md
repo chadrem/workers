@@ -83,7 +83,11 @@ Timers provide a way to execute code in the future:
     timer = Workers::PeriodicTimer.new(1) do
       puts 'Hello world many times'
     end
+    
+    # Let the timer print some lines.
     sleep 5
+    
+    # Shutdown the timer.
     timer.cancel
 
 ## Schedulers
@@ -99,9 +103,15 @@ You can create additional or custom ones as necessary:
     scheduler = Workers::Scheduler.new(:pool => pool)
     
     # Create a timer that uses the above scheduler.
-    timer = Workers::Timer.new(:scheduler => scheduler) do
+    timer = Workers::Timer.new(1, :scheduler => scheduler) do
       puts 'Hello world'
     end
+    
+    # Wait for the timer to fire.
+    sleep(5)
+    
+    # Shutdown the scheduler.
+    scheduler.dispose
 
 ## Options (defaults below):
 
