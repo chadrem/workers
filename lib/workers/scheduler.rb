@@ -14,13 +14,21 @@ module Workers
 
       wakeup
 
+      return nil
+    end
+
+    def unschedule(timer)
+      @mutex.synchronize do
+        @schedule.delete(timer)
+      end
+
       return true
     end
 
     def wakeup
       @thread.wakeup
 
-      return true
+      return nil
     end
 
     def dispose
@@ -30,7 +38,7 @@ module Workers
         @thread.kill
       end
 
-      return true
+      return nil
     end
 
     private
@@ -64,6 +72,9 @@ module Workers
         @pool.perform do
           timer.fire
         end
+
+        timer.reset
+        @schedule << timer if timer.repeat
       end
 
       return nil

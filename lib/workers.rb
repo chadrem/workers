@@ -9,6 +9,7 @@ require 'workers/event'
 require 'workers/log_proxy'
 require 'workers/scheduler'
 require 'workers/timer'
+require 'workers/periodic_timer'
 
 module Workers
   def self.scheduler
