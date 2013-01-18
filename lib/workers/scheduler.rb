@@ -57,7 +57,6 @@ module Workers
 
       return nil
     rescue Exception => e
-      puts e.inspect
     end
 
     def process_overdue

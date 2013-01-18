@@ -38,7 +38,6 @@ module Workers
         begin
           @callback.call if @callback
         rescue Exception => e
-          puts "EXCEPTION: #{e.message}\n#{e.backtrace.join("\n")}\n--"
         end
 
         return nil
