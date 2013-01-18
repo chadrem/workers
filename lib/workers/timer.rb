@@ -3,11 +3,12 @@ module Workers
     attr_reader :delay
     attr_reader :repeat
 
-    def initialize(delay, options = {}, callback = nil, &block)
+    def initialize(delay, options = {}, &block)
       @delay = delay
-      @callback = callback || block
+      @callback = options[:callback] || block
       @repeat = options[:repeat] || false
       @scheduler = options[:scheduler] || Workers.scheduler
+      @logger = options[:logger]
 
       @mutex = Mutex.new
 
@@ -35,7 +36,7 @@ module Workers
     def fire
       @mutex.synchronize do
         begin
-          @callback.call
+          @callback.call if @callback
         rescue Exception => e
           puts "EXCEPTION: #{e.message}\n#{e.backtrace.join("\n")}\n--"
         end
