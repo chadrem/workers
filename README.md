@@ -88,7 +88,7 @@ Timers provide a way to execute code in the future:
 
 ## Schedulers
 
-Schedulers are what trigger a Timer to fire.
+Schedulers are what trigger Timers to fire.
 The system has a global default scheduler which should meet most needs (Workers.scheduler).
 You can create additional or custom ones as necessary:
 
