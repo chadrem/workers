@@ -17,7 +17,7 @@ Or install it yourself as:
 
     $ gem install workers
 
-## Basic Usage
+## Workers - Basic
 
     # Initialize a worker pool.
     pool = Workers::Pool.new
@@ -38,7 +38,7 @@ Or install it yourself as:
     # Wait for the workers to shutdown.
     pool.join
 
-## Advanced Usage
+## Workers - Advanced
 
 The Worker class is designed to be customized through inheritence and its event system:
 
