@@ -129,6 +129,11 @@ You can create additional or custom ones as necessary:
       :callback => nil                 # The proc to execute (provide this or a block, but not both).
     )
     
+    scheduler = Workers::Scheduler.new(
+      :logger => nil,                  # Ruby logger instance.
+      :pool => Workers::Pool.new       # The workers pool used to execute timer callbacks.
+    )
+    
 
 ## TODO - not yet implemented features
 
