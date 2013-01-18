@@ -70,9 +70,25 @@ The Worker class is designed to be customized through inheritence and its event 
     # Wait for the workers to shutdown.
     pool.join
 
-## Options
+## Timers
 
-The pool class (defaults below):
+Timers provide a way to execute code in the future:
+
+    # Create a one shot timer that executes in 1.5 seconds.
+    timer = Workers::Timer.new(1.5) do
+      puts 'Hello world'
+    end
+    
+    # Create a periodic timer that loops infinitely or until 'cancel' is called.
+    timer = Workers::PeriodicTimer.new(1) do
+      puts 'Hello world many times'
+    end
+    sleep 5
+    timer.cancel
+
+Callbacks execute using a Workers::Pool in case they contain blocking operations.
+
+## Options (defaults below):
 
     pool = Workers::Pool.new(
       :size => 20,                     # Number of threads to create.
@@ -80,12 +96,24 @@ The pool class (defaults below):
       :worker_class => Workers::Worker # Class of worker to use for this pool.
     )
 
-The worker class (defaults below):
-
     worker = Workers::Worker.new(
       :logger => nil,                  # Ruby Logger instance.
       :input_queue => nil              # Ruby Queue used for input events.
     )
+
+    timer = Workers::Timer.new(1,
+      :logger => nil,                  # Ruby logger instance.
+      :repeat => false,                # Repeat the timer until 'cancel' is called.
+      :scheduler => Workers.scheduler, # The scheduler that manages execution.
+      :callback => nil                 # The proc to execute (provide this or a block, but not both).
+    )
+    
+    timer = Workers::PeriodicTimer.new(1,
+      :logger => nil,                  # Ruby logger instance.
+      :scheduler => Workers.scheduler, # The scheduler that manages execution.
+      :callback => nil                 # The proc to execute (provide this or a block, but not both).
+    )
+    
 
 ## TODO - not yet implemented features
 
@@ -119,22 +147,6 @@ TaskGroup and Task can then be used to build an easy to use parallel map.
 Care will have to taken regarding global data and the thread safety of data structures:
 
     Workers.map([1, 2, 3, 4]) { |i| i * i }
-
-### Timers
-
-Timers provide a means of delayed task execution and a way to signal workers to do future work:
-
-    # Create a one shot timer.
-    timer = Workers::Timer.new(5) do
-      puts 'Hello world'
-    end
-    
-    # Create a periodic timer.
-    timer = Workers::PeriodicTimer.new(5) do
-      puts 'Hello world many times'
-    end
-
-The timer callbacks will execute using a Workers::Pool in case they contain blocking operations.
 
 ## Contributing
 
