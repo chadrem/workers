@@ -70,6 +70,9 @@ The Worker class is designed to be customized through inheritence and its event 
     # Wait for the workers to shutdown.
     pool.join
 
+Note that you can use custom workers without a pool.
+This effectively gives you direct access to a single event driven thread.
+
 ## Timers
 
 Timers provide a way to execute code in the future:
