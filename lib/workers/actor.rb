@@ -1,11 +1,14 @@
 module Workers
   class Actor
+    include Workers::Helpers
+
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
-      @pool = options[:pool] || Workers.pool
+      @dedicated = options[:dedicated] || false
       @mailbox = options[:mailbox] || Workers::Mailbox.new
       @registry = options[:registry] || Workers.registry
       @name = options[:name]
+      @pool = @dedicated ? Workers::Pool.new(:size => 1) : (options[:pool] || Workers.pool)
       @alive = true
 
       @registry.register(self)
@@ -44,6 +47,7 @@ module Workers
         case event.command
         when :shutdown
           shutdown_handler(event)
+          @pool.shutdown if @dedicated
           @mailbox.synchronize do
             @alive = false
           end

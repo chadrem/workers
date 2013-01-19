@@ -12,6 +12,7 @@ require 'workers/timer'
 require 'workers/periodic_timer'
 require 'workers/mailbox'
 require 'workers/actor'
+require 'workers/dedicated_actor'
 require 'workers/registry'
 
 module Workers
