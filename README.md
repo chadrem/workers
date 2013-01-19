@@ -207,6 +207,7 @@ If you need an actor that can block for long periods then you should give the ac
       :mailbox => Workers::Mailbox.new # The mailbox used to receive events.
       :registry => Workers.registry    # The registry used to store references to named workers.
       :name => nil                     # The name of the worker.
+    )
     
 
 ## TODO - not yet implemented features
