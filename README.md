@@ -144,32 +144,30 @@ They are event driven and use a worker pool in order to execute their event loop
       end
       
       def shutdown_handler(event)
-        "MyActor (#{identifier}) is shutting down.  Put cleanup code here."
+        puts "MyActor (#{identifier}) is shutting down.  Put cleanup code here."
       end
     end
     
     # Create some named actors.
-    100.times do i
-      MyActor.new(:name => "my_actor_#{i")
+    100.times do |i|
+      MyActor.new(:name => "my_actor_#{i}")
     end
     
     # Send an event to each actors.  Find each actor using the registry.
-    100.times do i
+    100.times do |i|
       actor = Workers.registry["my_actor_#{i}"]
       actor.enqueue(:my_custom, 'hello world')
     end
     
     # Shutdown the actors.
-    100.times do i
+    100.times do |i|
       actor = Workers.registry["my_actor_#{i}"]
       actor.enqueue(:shutdown)
     end
 
 ### Implementation notes
 Because actors use a shared worker pool, it is important that they don't block for long periods of time.
-If you need an actor that can block for long periods then you should give it a dedicated pool (with :size = 1):
-
-
+If you need an actor that can block for long periods then you should give it a dedicated pool.
 
 ## Options (defaults below):
 
@@ -201,6 +199,14 @@ If you need an actor that can block for long periods then you should give it a d
       :logger => nil,                  # Ruby logger instance.
       :pool => Workers::Pool.new       # The workers pool used to execute timer callbacks.
     )
+    
+    actor = Workers::Actor.new(
+      :logger => nil,                  # Ruby logger instance.
+      :dedicated => false,             # If true, the actor runs with a worker pool that has one thread.
+      :pool => Workers.pool,           # The workers pool used to execute events.
+      :mailbox => Workers::Mailbox.new # The mailbox used to receive events.
+      :registry => Workers.registry    # The registry used to store references to named workers.
+      :name => nil                     # The name of the worker.
     
 
 ## TODO - not yet implemented features
