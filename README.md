@@ -167,7 +167,7 @@ They are event driven and use a worker pool in order to execute their event loop
 
 ### Implementation notes
 Because actors use a shared worker pool, it is important that they don't block for long periods of time.
-If you need an actor that can block for long periods then you should give it a dedicated pool.
+If you need an actor that can block for long periods then you should give the actor a dedicated thread (:dedicated => true).
 
 ## Options (defaults below):
 
