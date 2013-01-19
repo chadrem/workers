@@ -205,7 +205,14 @@ If you need an actor that can block for long periods then you should give the ac
       :dedicated => false,              # If true, the actor runs with a worker pool that has one thread.
       :pool => Workers.pool,            # The workers pool used to execute events.
       :mailbox => Workers::Mailbox.new, # The mailbox used to receive events.
-      :registry => Workers.registry,    # The registry used to store references to named workers.
+      :registry => Workers.registry,    # The registry used to store a reference to the actor if it has a name.
+      :name => nil                      # The name of the worker.
+    )
+    
+    actor = Workers::DedicatedActor.new(
+      :logger => nil,                   # Ruby logger instance.
+      :mailbox => Workers::Mailbox.new, # The mailbox used to receive events.
+      :registry => Workers.registry,    # The registry used to store a reference to the actor if it has a name.
       :name => nil                      # The name of the worker.
     )
     
