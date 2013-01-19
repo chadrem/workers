@@ -48,13 +48,15 @@ module Workers
         case event.command
         when :shutdown
           shutdown_handler(event)
-          return
+          return nil
         when :perform
           perform_handler(event)
         else
           process_event(event)
         end
       end
+    rescue Exception => e
+      exception_handler(e)
     end
 
     def shutdown_handler(event)
@@ -63,6 +65,10 @@ module Workers
 
     def perform_handler(event)
       try_callback(event.data)
+    end
+
+    def exception_handler(e)
+      puts concat_e('Worker event loop died.', e)
     end
 
     def try_callback(callback, &block)
@@ -74,7 +80,7 @@ module Workers
     end
 
     def process_event(event)
-      raise 'Subclass and override if you need custom commands.'
+      raise "Unhandled event (#{event.inspect}). Subclass and override if you need custom events."
     end
   end
 end
