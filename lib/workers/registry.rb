@@ -35,5 +35,11 @@ module Workers
         return @actors_by_name[val]
       end
     end
+
+    def dispose
+      @mutex.synchronize do
+        @actors_by_name.clear
+      end
+    end
   end
 end

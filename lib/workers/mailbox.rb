@@ -16,5 +16,11 @@ module Workers
         @messages.shift
       end
     end
+
+    def synchronize(&block)
+      @mutex.synchronize do
+        block.call
+      end
+    end
   end
 end

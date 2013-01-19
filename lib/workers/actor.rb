@@ -7,7 +7,6 @@ module Workers
       @registry = options[:registry] || Workers.registry
       @name = options[:name]
       @alive = true
-      @alive_mutex = Mutex.new
 
       @registry.register(self)
     end
@@ -25,7 +24,7 @@ module Workers
     end
 
     def alive?
-      @alive_mutex.synchronize do
+      @mailbox.synchronize do
         return @alive
       end
     end
@@ -45,7 +44,7 @@ module Workers
         case event.command
         when :shutdown
           shutdown_handler(event)
-          @alive_mutex.synchronize do
+          @mailbox.synchronize do
             @alive = false
           end
         else

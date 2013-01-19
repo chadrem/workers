@@ -35,5 +35,12 @@ module Workers
     def join(max_wait = nil)
       return @workers.map { |w| w.join(max_wait) }
     end
+
+    def dispose
+      shutdown
+      join
+
+      return nil
+    end
   end
 end

@@ -19,12 +19,27 @@ module Workers
     return @pool ||= Workers::Pool.new
   end
 
+  def self.pool=(val)
+    @pool.dispose if @pool
+    @pool = val
+  end
+
   def self.scheduler
-    return @scheduler ||= Workers::Scheduler.new(:pool => pool)
+    return @scheduler ||= Workers::Scheduler.new
+  end
+
+  def self.scheduler=(val)
+    @scheduler.dispose if @scheduler
+    @scheduler = val
   end
 
   def self.registry
     return @registry ||= Workers::Registry.new
+  end
+
+  def self.registry=(val)
+    @registry.dispose if @registry
+    @registry = val
   end
 end
 
