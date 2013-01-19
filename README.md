@@ -169,6 +169,11 @@ They are event driven and use a worker pool in order to execute their event loop
 Because actors use a shared worker pool, it is important that they don't block for long periods of time.
 If you need an actor that can block for long periods then you should give the actor a dedicated thread (:dedicated => true).
 
+## Registries
+
+Registries hold references to named actors.
+In general you shouldn't have to create your own since there is a global one (Workers.registry).
+
 ## Options (defaults below):
 
     pool = Workers::Pool.new(
