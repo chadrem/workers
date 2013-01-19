@@ -172,41 +172,41 @@ If you need an actor that can block for long periods then you should give the ac
 ## Options (defaults below):
 
     pool = Workers::Pool.new(
-      :size => 20,                     # Number of threads to create.
-      :logger => nil,                  # Ruby Logger instance.
-      :worker_class => Workers::Worker # Class of worker to use for this pool.
+      :size => 20,                      # Number of threads to create.
+      :logger => nil,                   # Ruby Logger instance.
+      :worker_class => Workers::Worker  # Class of worker to use for this pool.
     )
 
     worker = Workers::Worker.new(
-      :logger => nil,                  # Ruby Logger instance.
-      :input_queue => nil              # Ruby Queue used for input events.
+      :logger => nil,                   # Ruby Logger instance.
+      :input_queue => nil               # Ruby Queue used for input events.
     )
 
     timer = Workers::Timer.new(1,
-      :logger => nil,                  # Ruby logger instance.
-      :repeat => false,                # Repeat the timer until 'cancel' is called.
-      :scheduler => Workers.scheduler, # The scheduler that manages execution.
-      :callback => nil                 # The proc to execute (provide this or a block, but not both).
+      :logger => nil,                   # Ruby logger instance.
+      :repeat => false,                 # Repeat the timer until 'cancel' is called.
+      :scheduler => Workers.scheduler,  # The scheduler that manages execution.
+      :callback => nil                  # The proc to execute (provide this or a block, but not both).
     )
     
     timer = Workers::PeriodicTimer.new(1,
-      :logger => nil,                  # Ruby logger instance.
-      :scheduler => Workers.scheduler, # The scheduler that manages execution.
-      :callback => nil                 # The proc to execute (provide this or a block, but not both).
+      :logger => nil,                   # Ruby logger instance.
+      :scheduler => Workers.scheduler,  # The scheduler that manages execution.
+      :callback => nil                  # The proc to execute (provide this or a block, but not both).
     )
     
     scheduler = Workers::Scheduler.new(
-      :logger => nil,                  # Ruby logger instance.
-      :pool => Workers::Pool.new       # The workers pool used to execute timer callbacks.
+      :logger => nil,                   # Ruby logger instance.
+      :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
     )
     
     actor = Workers::Actor.new(
-      :logger => nil,                  # Ruby logger instance.
-      :dedicated => false,             # If true, the actor runs with a worker pool that has one thread.
-      :pool => Workers.pool,           # The workers pool used to execute events.
-      :mailbox => Workers::Mailbox.new # The mailbox used to receive events.
-      :registry => Workers.registry    # The registry used to store references to named workers.
-      :name => nil                     # The name of the worker.
+      :logger => nil,                   # Ruby logger instance.
+      :dedicated => false,              # If true, the actor runs with a worker pool that has one thread.
+      :pool => Workers.pool,            # The workers pool used to execute events.
+      :mailbox => Workers::Mailbox.new, # The mailbox used to receive events.
+      :registry => Workers.registrym    # The registry used to store references to named workers.
+      :name => nil                      # The name of the worker.
     )
     
 
