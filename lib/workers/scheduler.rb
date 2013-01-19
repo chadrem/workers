@@ -1,7 +1,9 @@
 module Workers
   class Scheduler
+    include Workers::Helpers
+
     def initialize(options = {})
-      @logger = options[:logger]
+      @logger = Workers::LogProxy.new(options[:logger])
       @pool = options[:pool] || Workers::Pool.new
       @schedule = SortedSet.new
       @mutex = Mutex.new
@@ -40,6 +42,10 @@ module Workers
       end
 
       return nil
+    end
+
+    def alive?
+      return @thread && @thread.alive?
     end
 
     private

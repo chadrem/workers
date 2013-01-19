@@ -1,14 +1,16 @@
 module Workers
   class Timer
+    include Workers::Helpers
+
     attr_reader :delay
     attr_reader :repeat
 
     def initialize(delay, options = {}, &block)
+      @logger = Workers::LogProxy.new(options[:logger])
       @delay = delay
       @callback = options[:callback] || block
       @repeat = options[:repeat] || false
       @scheduler = options[:scheduler] || Workers.scheduler
-      @logger = options[:logger]
 
       @mutex = Mutex.new
 

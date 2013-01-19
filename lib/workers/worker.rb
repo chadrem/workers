@@ -28,40 +28,48 @@ module Workers
     end
 
     def join(max_wait = nil)
-      raise "Worker can't join itself!" if @thread == Thread.current
+      raise "Worker can't join itself." if @thread == Thread.current
 
       return true if !@thread.join(max_wait).nil?
 
       @thread.kill and return false
     end
 
+    def alive?
+      return @thread && @thread.alive?
+    end
+
     private
 
     def start_event_loop
       while true
-        event = @input_queue.pop # Blocking.
+        event = @input_queue.pop
 
         case event.command
         when :shutdown
-          try_callback(event.data) do |e|
-            log_error("Worker failed run 'shutdown' callback.", e)
-          end
+          shutdown_handler(event)
           return
         when :perform
-          try_callback(event.data) do |e|
-            log_error("Worker failed run 'perform' callback.", e)
-          end
+          perform_handler(event)
         else
           process_event(event)
         end
       end
     end
 
+    def shutdown_handler(event)
+      try_callback(event.data)
+    end
+
+    def perform_handler(event)
+      try_callback(event.data)
+    end
+
     def try_callback(callback, &block)
       begin
         callback.call
       rescue Exception => e
-        block.call(e)
+        block.call(e) if block
       end
     end
 

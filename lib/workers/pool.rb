@@ -5,8 +5,8 @@ module Workers
     DEFAULT_POOL_SIZE = 20
 
     def initialize(options = {})
-      @size = options[:size] || Workers::Pool::DEFAULT_POOL_SIZE
       @logger = Workers::LogProxy.new(options[:logger])
+      @size = options[:size] || Workers::Pool::DEFAULT_POOL_SIZE
       @worker_class = options[:worker_class] || Workers::Worker
 
       @input_queue = Queue.new
