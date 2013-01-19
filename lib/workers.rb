@@ -10,11 +10,25 @@ require 'workers/log_proxy'
 require 'workers/scheduler'
 require 'workers/timer'
 require 'workers/periodic_timer'
+require 'workers/mailbox'
+require 'workers/actor'
+require 'workers/registry'
 
 module Workers
+  def self.pool
+    return @pool ||= Workers::Pool.new
+  end
+
   def self.scheduler
-    return @scheduler ||= Workers::Scheduler.new
+    return @scheduler ||= Workers::Scheduler.new(:pool => pool)
+  end
+
+  def self.registry
+    return @registry ||= Workers::Registry.new
   end
 end
 
-Workers.scheduler # Force initialization of default scheduler.
+# Force initialization of defaults.
+Workers.pool
+Workers.scheduler
+Workers.registry
