@@ -14,7 +14,7 @@ module Workers
       @size.times { @workers << @worker_class.new(:input_queue => @input_queue) }
     end
 
-    def enqueue(command, data)
+    def enqueue(command, data = nil)
       @input_queue.push(Event.new(command, data))
 
       return nil

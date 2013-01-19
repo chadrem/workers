@@ -11,7 +11,7 @@ module Workers
       @registry.register(self)
     end
 
-    def enqueue(command, data)
+    def enqueue(command, data = nil)
       return false unless @alive
 
       @mailbox.push(Event.new(command, data))

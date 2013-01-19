@@ -9,7 +9,7 @@ module Workers
       @thread = Thread.new { start_event_loop }
     end
 
-    def enqueue(command, data)
+    def enqueue(command, data = nil)
       @input_queue.push(Event.new(command, data))
 
       return nil
