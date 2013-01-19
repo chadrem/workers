@@ -116,6 +116,61 @@ You can create additional or custom ones as necessary:
     # Shutdown the scheduler.
     scheduler.dispose
 
+## Actors
+
+Actors are light weight concurrent objects that use asynchronous message passing to communicate with each other.
+They are event driven and use a worker pool in order to execute their event loop.
+
+    # Create your custom actor class.
+    class MyActor < Workers::Actor
+      private
+      def initialize(options = {})
+        super
+      end
+      
+      def process_event(event)
+       case event.command
+       when :my_custom
+         my_custom_handler(event)
+       end
+      end
+      
+      def my_custom_handler(event)
+        puts "Received a custom event (#{event.inspect})"
+      end
+      
+      def exception_handler(e)
+        puts concat_e("MyActor (#{identifier}) died.", e)
+      end
+      
+      def shutdown_handler(event)
+        "MyActor (#{identifier}) is shutting down.  Put cleanup code here."
+      end
+    end
+    
+    # Create some named actors.
+    100.times do i
+      MyActor.new(:name => "my_actor_#{i")
+    end
+    
+    # Send an event to each actors.  Find each actor using the registry.
+    100.times do i
+      actor = Workers.registry["my_actor_#{i}"]
+      actor.enqueue(:my_custom, 'hello world')
+    end
+    
+    # Shutdown the actors.
+    100.times do i
+      actor = Workers.registry["my_actor_#{i}"]
+      actor.enqueue(:shutdown)
+    end
+
+### Implementation notes
+Because actors use a shared worker pool, it is important that they don't block for long periods of time.
+If you need an actor that can block for long periods then you should give it a dedicated pool (with :size = 1):
+
+
+
 ## Options (defaults below):
 
     pool = Workers::Pool.new(
