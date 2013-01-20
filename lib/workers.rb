@@ -10,10 +10,6 @@ require 'workers/log_proxy'
 require 'workers/scheduler'
 require 'workers/timer'
 require 'workers/periodic_timer'
-require 'workers/mailbox'
-require 'workers/actor'
-require 'workers/dedicated_actor'
-require 'workers/registry'
 
 module Workers
   def self.pool
@@ -33,18 +29,8 @@ module Workers
     @scheduler.dispose if @scheduler
     @scheduler = val
   end
-
-  def self.registry
-    return @registry ||= Workers::Registry.new
-  end
-
-  def self.registry=(val)
-    @registry.dispose if @registry
-    @registry = val
-  end
 end
 
 # Force initialization of defaults.
 Workers.pool
 Workers.scheduler
-Workers.registry
