@@ -147,7 +147,7 @@ You can create additional or custom ones as necessary:
       :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
     )
 
-## TODO - not yet implemented features
+## TODO - missing features
 
 ### Tasks
 
