@@ -72,7 +72,7 @@ The Worker class is designed to be customized through inheritence and its event 
     pool.join
 
 Note that you can use custom workers without a pool.
-This effectively gives you direct access to a single event driven thread.
+This effectively gives you direct access to a single event-driven thread.
 
 ## Timers
 
