@@ -3,7 +3,7 @@ module Workers
     attr_accessor :logger
 
     def initialize(logger)
-      @logger = logger
+      @logger = logger.is_a?(Workers::LogProxy) ? logger.logger : logger
     end
 
     def debug(msg)
