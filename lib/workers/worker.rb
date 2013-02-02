@@ -39,6 +39,10 @@ module Workers
       return @thread && @thread.alive?
     end
 
+    def inspect
+      return "#<#{self.class.to_s}:0x#{(object_id << 1).to_s(16)} #{alive? ? 'alive' : 'dead'}>"
+    end
+
     private
 
     def start_event_loop

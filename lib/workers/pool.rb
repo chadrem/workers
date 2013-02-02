@@ -42,5 +42,9 @@ module Workers
 
       return nil
     end
+
+    def inspect
+      return "#<#{self.class.to_s}:0x#{(object_id << 1).to_s(16)} size=#{@size}>"
+    end
   end
 end
