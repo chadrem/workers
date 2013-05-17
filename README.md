@@ -82,15 +82,15 @@ Timers provide a way to execute code in the future:
     timer = Workers::Timer.new(1.5) do
       puts 'Hello world'
     end
-    
+
     # Create a periodic timer that loops infinitely or until 'cancel' is called.
     timer = Workers::PeriodicTimer.new(1) do
       puts 'Hello world many times'
     end
-    
+
     # Let the timer print some lines.
     sleep(5)
-    
+
     # Shutdown the timer.
     timer.cancel
 
@@ -102,20 +102,72 @@ You can create additional or custom ones as necessary:
 
     # Create a workers pool with a larger than default thread count (optional).
     pool = Workers::Pool.new(:size => 100)
-    
+
     # Create a scheduler.
     scheduler = Workers::Scheduler.new(:pool => pool)
-    
+
     # Create a timer that uses the above scheduler.
     timer = Workers::Timer.new(1, :scheduler => scheduler) do
       puts 'Hello world'
     end
-    
+
     # Wait for the timer to fire.
     sleep(5)
-    
+
     # Shutdown the scheduler.
     scheduler.dispose
+
+### Tasks
+
+Tasks and task groups build on top of worker pools.
+They provide a means of parallelizing expensive computations and collecing the results:
+
+    # Create a task group (it contains a pool of workers).
+    group = Workers::TaskGroup.new
+
+    # Add tasks to the group.
+    10.times do |i|
+      10.times do |j|
+        group.add(i, j) do
+          i * j # Last statement executed is the result of the task.
+        end
+      end
+    end
+
+    # Execute the tasks (blocks until the tasks complete).
+    # Returns true if all tasks succeed.  False if any fail.
+    group.run
+
+    # Return an array of all the tasks.
+    group.tasks
+
+    # Return an array of the successful tasks.
+    group.successes
+
+    # Return an array of the failed tasks.
+    group.failures
+
+    # Review the results.
+    group.tasks.each do |t|
+      t.succeeded? # True or false (false if an exception occurred).
+      t.failed?    # True or false (true if an exception occurred).
+      t.args       # Input arguments (the value of i in this example).
+      t.result     # Output value (the result of i * i in this example).
+      t.exception  # The exception if one exists.
+    end
+
+### Parallel Map
+
+Task groups and tasks are the building blocks of parallel map:
+
+    group = Workers::TaskGroup.new
+    group.map([1,2,3,4,5]) { |i| i * i }
+
+The below syntax is equivalent to the above:
+
+    Workers.map([1, 2, 3, 4, 5]) { |i| i * i }
+
+Note that any failures will cause an exception to be raised.
 
 ## Options (defaults below):
 
@@ -136,50 +188,29 @@ You can create additional or custom ones as necessary:
       :scheduler => Workers.scheduler,  # The scheduler that manages execution.
       :callback => nil                  # The proc to execute (provide this or a block, but not both).
     )
-    
+
     timer = Workers::PeriodicTimer.new(1,
       :logger => nil,                   # Ruby logger instance.
       :scheduler => Workers.scheduler,  # The scheduler that manages execution.
       :callback => nil                  # The proc to execute (provide this or a block, but not both).
     )
-    
+
     scheduler = Workers::Scheduler.new(
       :logger => nil,                   # Ruby logger instance.
       :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
     )
 
-## TODO - missing features
+    group = Workers::TaskGroup.new(
+      :logger => nil,                   # Ruby logger instance.
+      :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
+    )
 
-### Tasks
-
-Tasks and task groups build on top of worker pools.
-They provide a means of parallelizing expensive computations and collecing the results:
-
-    # Create a task group (it contains a pool of workers).
-    group = Workers::TaskGroup.new
-
-    # Add tasks to the group.
-    100.times do |i|
-      group.add(i) do
-        i * i
-      end
-    end
-
-    # Execute the tasks (blocks until the tasks complete).
-    group.run
-
-    # Review the results.
-    group.tasks.each do |t|
-      t.succeeded? # True or false (false if an exception occurred).
-      t.args       # Input arguments (the value of i in this example).
-      t.result     # Output value (the result of i * i in this example).
-      t.exception  # The exception if one exists.
-    end
-
-TaskGroup and Task can then be used to build an easy to use parallel map.
-Care will have to taken regarding global data and the thread safety of data structures:
-
-    Workers.map([1, 2, 3, 4]) { |i| i * i }
+    task = Workers::Task.new(
+      :logger => nil,                   # Ruby logger instance.
+      :perform => proc {},              # Required option.  Block of code to run.
+      :args => [],                      # Array of arguments passed to the 'perform' block.
+      :finished => nil,                 # Callback to execute after attempting to run the task.
+    )
 
 ## Contributing
 
