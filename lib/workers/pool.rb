@@ -30,13 +30,18 @@ module Workers
     end
 
     def shutdown(&block)
-      contract(@size, block)
+      contract(@size) do
+        block.call
+      end
 
       return nil
     end
 
     def join(max_wait = nil)
-      return @workers.map { |w| w.join(max_wait) }
+      results = @workers.map { |w| w.join(max_wait) }
+      @workers.clear
+
+      return results
     end
 
     def dispose

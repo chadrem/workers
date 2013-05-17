@@ -75,10 +75,31 @@ The Worker class is designed to be customized through inheritence and its event 
 Note that you can use custom workers without a pool.
 This effectively gives you direct access to a single event-driven thread.
 
+## Pools - Advanced
+
+As shown above, pools effectively allow a group of workers to share a work queue.
+They have a few additional methods described below:
+
+    # Create a pool.
+    pool = Workers::Pool.new
+
+    # Return the number of workers in the pool.
+    pool.size
+
+    # Increase the number of workers in the pool.
+    pool.expand(5)
+
+    # Decrease the number of workers in the pool.
+    pool.contract(5)
+
+    # Resize the pool size to a specific value.
+    pool.resize(20)
+
 ## Tasks
 
 Tasks and task groups build on top of worker pools.
-They provide a means of parallelizing expensive computations and collecing the results:
+They provide a means of parallelizing expensive computations and collecing the results.
+These are the classes you normally work with in your application level code.
 
     # Create a task group (it contains a pool of workers).
     group = Workers::TaskGroup.new
