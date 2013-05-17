@@ -74,49 +74,6 @@ The Worker class is designed to be customized through inheritence and its event 
 Note that you can use custom workers without a pool.
 This effectively gives you direct access to a single event-driven thread.
 
-## Timers
-
-Timers provide a way to execute code in the future:
-
-    # Create a one shot timer that executes in 1.5 seconds.
-    timer = Workers::Timer.new(1.5) do
-      puts 'Hello world'
-    end
-
-    # Create a periodic timer that loops infinitely or until 'cancel' is called.
-    timer = Workers::PeriodicTimer.new(1) do
-      puts 'Hello world many times'
-    end
-
-    # Let the timer print some lines.
-    sleep(5)
-
-    # Shutdown the timer.
-    timer.cancel
-
-## Schedulers
-
-Schedulers are what trigger Timers to fire.
-The system has a global default scheduler which should meet most needs (Workers.scheduler).
-You can create additional or custom ones as necessary:
-
-    # Create a workers pool with a larger than default thread count (optional).
-    pool = Workers::Pool.new(:size => 100)
-
-    # Create a scheduler.
-    scheduler = Workers::Scheduler.new(:pool => pool)
-
-    # Create a timer that uses the above scheduler.
-    timer = Workers::Timer.new(1, :scheduler => scheduler) do
-      puts 'Hello world'
-    end
-
-    # Wait for the timer to fire.
-    sleep(5)
-
-    # Shutdown the scheduler.
-    scheduler.dispose
-
 ## Tasks
 
 Tasks and task groups build on top of worker pools.
@@ -169,6 +126,49 @@ The below syntax is equivalent to the above:
 
 Note that any failures will cause an exception to be raised.
 
+## Timers
+
+Timers provide a way to execute code in the future:
+
+    # Create a one shot timer that executes in 1.5 seconds.
+    timer = Workers::Timer.new(1.5) do
+      puts 'Hello world'
+    end
+
+    # Create a periodic timer that loops infinitely or until 'cancel' is called.
+    timer = Workers::PeriodicTimer.new(1) do
+      puts 'Hello world many times'
+    end
+
+    # Let the timer print some lines.
+    sleep(5)
+
+    # Shutdown the timer.
+    timer.cancel
+
+## Schedulers
+
+Schedulers are what trigger Timers to fire.
+The system has a global default scheduler which should meet most needs (Workers.scheduler).
+You can create additional or custom ones as necessary:
+
+    # Create a workers pool with a larger than default thread count (optional).
+    pool = Workers::Pool.new(:size => 100)
+
+    # Create a scheduler.
+    scheduler = Workers::Scheduler.new(:pool => pool)
+
+    # Create a timer that uses the above scheduler.
+    timer = Workers::Timer.new(1, :scheduler => scheduler) do
+      puts 'Hello world'
+    end
+
+    # Wait for the timer to fire.
+    sleep(5)
+
+    # Shutdown the scheduler.
+    scheduler.dispose
+
 ## Options (defaults below):
 
     pool = Workers::Pool.new(
@@ -189,17 +189,6 @@ Note that any failures will cause an exception to be raised.
       :callback => nil                  # The proc to execute (provide this or a block, but not both).
     )
 
-    timer = Workers::PeriodicTimer.new(1,
-      :logger => nil,                   # Ruby logger instance.
-      :scheduler => Workers.scheduler,  # The scheduler that manages execution.
-      :callback => nil                  # The proc to execute (provide this or a block, but not both).
-    )
-
-    scheduler = Workers::Scheduler.new(
-      :logger => nil,                   # Ruby logger instance.
-      :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
-    )
-
     group = Workers::TaskGroup.new(
       :logger => nil,                   # Ruby logger instance.
       :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
@@ -210,6 +199,17 @@ Note that any failures will cause an exception to be raised.
       :perform => proc {},              # Required option.  Block of code to run.
       :args => [],                      # Array of arguments passed to the 'perform' block.
       :finished => nil,                 # Callback to execute after attempting to run the task.
+    )
+
+    timer = Workers::PeriodicTimer.new(1,
+      :logger => nil,                   # Ruby logger instance.
+      :scheduler => Workers.scheduler,  # The scheduler that manages execution.
+      :callback => nil                  # The proc to execute (provide this or a block, but not both).
+    )
+
+    scheduler = Workers::Scheduler.new(
+      :logger => nil,                   # Ruby logger instance.
+      :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
     )
 
 ## Contributing
