@@ -117,7 +117,7 @@ You can create additional or custom ones as necessary:
     # Shutdown the scheduler.
     scheduler.dispose
 
-### Tasks
+## Tasks
 
 Tasks and task groups build on top of worker pools.
 They provide a means of parallelizing expensive computations and collecing the results:
@@ -156,7 +156,7 @@ They provide a means of parallelizing expensive computations and collecing the r
       t.exception  # The exception if one exists.
     end
 
-### Parallel Map
+## Parallel Map
 
 Task groups and tasks are the building blocks of parallel map:
 
