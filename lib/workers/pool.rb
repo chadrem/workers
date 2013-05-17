@@ -73,5 +73,15 @@ module Workers
 
       return nil
     end
+
+    def resize(new_size)
+      if new_size > @size
+        expand(new_size - @size)
+      elsif new_size < @size
+        contract(@size - new_size)
+      end
+
+      return nil
+    end
   end
 end
