@@ -2,6 +2,7 @@
 
 Workers is a Ruby gem for performing work in background threads.
 Design goals include high performance, low latency, simple API, customizability, and multi-layered architecture.
+It provides a number of simple to use classes that solve a wide range of concurrency problems.
 It is used by [Tribe](https://github.com/chadrem/tribe "Tribe") to implement event-driven actors.
 
 ## Installation
