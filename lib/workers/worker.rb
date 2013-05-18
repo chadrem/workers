@@ -5,8 +5,9 @@ module Workers
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
       @input_queue = options[:input_queue] || Queue.new
-
       @thread = Thread.new { start_event_loop }
+
+      return nil
     end
 
     def enqueue(command, data = nil)
