@@ -11,12 +11,12 @@ module Workers
       @callback = options[:callback] || block
       @repeat = options[:repeat] || false
       @scheduler = options[:scheduler] || Workers.scheduler
-
       @mutex = Mutex.new
 
       reset
-
       @scheduler.schedule(self)
+
+      return nil
     end
 
     def <=>(other)

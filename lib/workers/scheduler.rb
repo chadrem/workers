@@ -8,6 +8,8 @@ module Workers
       @schedule = SortedSet.new
       @mutex = Mutex.new
       @thread = Thread.new { start_loop }
+
+      return nil
     end
 
     def schedule(timer)

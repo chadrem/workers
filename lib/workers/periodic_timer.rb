@@ -4,6 +4,8 @@ module Workers
       options[:repeat] = true
 
       super(delay, options, &block)
+
+      return nil
     end
   end
 end

@@ -6,6 +6,8 @@ module Workers
     def initialize(command, data)
       @command = command
       @data = data
+
+      return nil
     end
   end
 end
