@@ -64,23 +64,15 @@ module Workers
     end
 
     def shutdown_handler(event)
-      try_callback(event.data)
+      event.data.call(self) if event.data
     end
 
     def perform_handler(event)
-      try_callback(event.data)
+      event.data.call if event.data
     end
 
     def exception_handler(e)
       puts concat_e('Worker event loop died.', e)
-    end
-
-    def try_callback(callback, &block)
-      begin
-        callback.call
-      rescue Exception => e
-        block.call(e) if block
-      end
     end
 
     def process_event(event)
