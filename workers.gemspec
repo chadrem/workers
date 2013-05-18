@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = Workers::VERSION
   gem.authors       = ['Chad Remesch']
   gem.email         = ['chad@remesch.com']
-  gem.description   = %q{Simple Ruby workers for performing work in background threads.}
-  gem.summary       = %q{Workers is a Ruby gem for performing work in background threads. Design goals include high performance, low latency, simple API, customizability, and multi-layered architecture.}
+  gem.description   = %q{Workers is a Ruby gem for performing work in background threads.}
+  gem.summary       = %q{Workers is a Ruby gem for performing work in background threads. Design goals include high performance, low latency, simple API, customizability, and multi-layered architecture. It provides a number of simple to use classes that solve a wide range of concurrency problems.}
   gem.homepage      = 'https://github.com/chadrem/workers'
 
   gem.files         = `git ls-files`.split($/)
