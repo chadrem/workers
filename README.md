@@ -21,7 +21,7 @@ Or install it yourself as:
 
 ## Tasks
 
-Tasks and task groups build on top of workers and pools (explained later).
+Tasks and task groups build on top of pools of worker threads.
 They provide a means of parallelizing expensive computations, collecing results, and handling exceptions.
 These are the classes you normally work with in your application level code because they remove boiletplate.
 
