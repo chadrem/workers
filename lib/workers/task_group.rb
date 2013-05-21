@@ -10,7 +10,8 @@ module Workers
       @pool = options[:pool] || Workers.pool
       @state = :initialized
       @tasks = []
-      @lock = Mutex.new
+      @internal_lock = Mutex.new
+      @external_lock = Mutex.new
       @finished_count = 0
       @conditional = ConditionVariable.new
 
@@ -35,12 +36,12 @@ module Workers
       @state = :running
       @run_thread = Thread.current
 
-      @lock.synchronize do
+      @internal_lock.synchronize do
         @tasks.each do |task|
           @pool.perform { task.run }
         end
 
-        @conditional.wait(@lock)
+        @conditional.wait(@internal_lock)
       end
 
       return @tasks.all? { |t| t.succeeded? }
@@ -74,6 +75,14 @@ module Workers
       return tasks.map { |t| t.result }
     end
 
+    # Convenient mutex to be used by a users's task code that needs serializing.
+    # This should NEVER be used by TaskGroup code (use the @internal_lock instead);
+    def synchronize(&block)
+      @external_lock.synchronize { block.call }
+
+      return nil
+    end
+
     private
 
     def state!(*args)
@@ -85,7 +94,7 @@ module Workers
     end
 
     def finished(task)
-      @lock.synchronize do
+      @internal_lock.synchronize do
         @finished_count += 1
         @conditional.signal if @finished_count >= @tasks.count
       end
