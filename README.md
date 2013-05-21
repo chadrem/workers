@@ -23,9 +23,9 @@ Or install it yourself as:
 
 Tasks and task groups build on top of workers and pools (explained later).
 They provide a means of parallelizing expensive computations, collecing results, and handling exceptions.
-These are the classes you normally work with in your application level code because they remove common boiletplate code.
+These are the classes you normally work with in your application level code because they remove boiletplate.
 
-    # Create a task group (it contains a pool of workers).
+    # Create a task group (it contains a pool of worker threads).
     group = Workers::TaskGroup.new
 
     # Add tasks to the group.
@@ -48,7 +48,7 @@ These are the classes you normally work with in your application level code beca
     # Return an array of the successful tasks.
     group.successes
 
-    # Return an array of the failed tasks.
+    # Return an array of the failed tasks (raised an exception).
     group.failures
 
     # Review the results.
@@ -67,18 +67,19 @@ This method uses a mutex so you can serialize portions of your tasks that aren't
 
 Parallel Map is syntactic sugar for tasks and task groups:
 
-    Workers.map([1, 2, 3, 4, 5]) { |i| i * i }
-
-The above syntax is equivalent to the below:
-
     group = Workers::TaskGroup.new
     group.map([1,2,3,4,5]) { |i| i * i }
 
-Note that any failures will cause an exception to be raised.
+The above syntax is equivalent to the below:
+
+    Workers.map([1, 2, 3, 4, 5]) { |i| i * i }
+
+Note that any task failures (exceptions) will cause an exception to be raised.
+This means that parallel map is "all or nothing" where as tasks and task groups leave error processing up to you.
 
 ## Workers - Basic
 
-There are many cases where tasks, task groups, and parallel map are too high-level for your needs.
+There are many cases where tasks, task groups, and parallel map are too high-level.
 Fortunately you can use the lower level Worker class to solve these problems.
 The main purpose of the Worker class is to add an event system on top of the Thread class.
 This greatly simplifies inter-thread communication.
@@ -106,7 +107,7 @@ This greatly simplifies inter-thread communication.
 
 The Worker class is designed to be customized through inheritence and its event system:
 
-    # Create a custom worker class that handles custom commands.
+    # Create a subclass that handles custom events.
     class CustomWorker < Workers::Worker
       private
       def process_event(event)
