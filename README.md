@@ -108,6 +108,7 @@ These are the classes you normally work with in your application level code.
     10.times do |i|
       10.times do |j|
         group.add(i, j) do
+          group.synchronize { puts "Computing #{i} * #{j}..." }
           i * j # Last statement executed is the result of the task.
         end
       end
@@ -134,6 +135,9 @@ These are the classes you normally work with in your application level code.
       t.result     # Output value (the result of i * i in this example).
       t.exception  # The exception if one exists.
     end
+
+Note that instances of TaskGroup provide a 'synchronize' method.
+This method uses a mutex so you can serialize portions of your tasks that aren't thread safe.
 
 ## Parallel Map
 
