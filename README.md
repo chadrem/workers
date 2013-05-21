@@ -213,7 +213,7 @@ You can create additional or custom ones as necessary:
 
     group = Workers::TaskGroup.new(
       :logger => nil,                   # Ruby logger instance.
-      :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
+      :pool => Workers.pool             # The workers pool used to execute timer callbacks.
     )
 
     task = Workers::Task.new(
