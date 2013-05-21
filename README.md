@@ -19,7 +19,69 @@ Or install it yourself as:
 
     $ gem install workers
 
+## Tasks
+
+Tasks and task groups build on top of workers and pools (explained later).
+They provide a means of parallelizing expensive computations, collecing results, and handling exceptions.
+These are the classes you normally work with in your application level code because they remove common boiletplate code.
+
+    # Create a task group (it contains a pool of workers).
+    group = Workers::TaskGroup.new
+
+    # Add tasks to the group.
+    10.times do |i|
+      10.times do |j|
+        group.add(i, j) do
+          group.synchronize { puts "Computing #{i} * #{j}..." }
+          i * j # Last statement executed is the result of the task.
+        end
+      end
+    end
+
+    # Execute the tasks (blocks until the tasks complete).
+    # Returns true if all tasks succeed.  False if any fail.
+    group.run
+
+    # Return an array of all the tasks.
+    group.tasks
+
+    # Return an array of the successful tasks.
+    group.successes
+
+    # Return an array of the failed tasks.
+    group.failures
+
+    # Review the results.
+    group.tasks.each do |t|
+      t.succeeded? # True or false (false if an exception occurred).
+      t.failed?    # True or false (true if an exception occurred).
+      t.args       # Input arguments (the value of i in this example).
+      t.result     # Output value (the result of i * i in this example).
+      t.exception  # The exception if one exists.
+    end
+
+Note that instances of TaskGroup provide a 'synchronize' method.
+This method uses a mutex so you can serialize portions of your tasks that aren't thread safe.
+
+## Parallel Map
+
+Parallel Map is syntactic sugar for tasks and task groups:
+
+    Workers.map([1, 2, 3, 4, 5]) { |i| i * i }
+
+The above syntax is equivalent to the below:
+
+    group = Workers::TaskGroup.new
+    group.map([1,2,3,4,5]) { |i| i * i }
+
+Note that any failures will cause an exception to be raised.
+
 ## Workers - Basic
+
+There are many cases where tasks, task groups, and parallel map are too high-level for your needs.
+Fortunately you can use the lower level Worker class to solve these problems.
+The main purpose of the Worker class is to add an event system on top of the Thread class.
+This greatly simplifies inter-thread communication.
 
     # Initialize a worker pool.
     pool = Workers::Pool.new
@@ -75,7 +137,7 @@ The Worker class is designed to be customized through inheritence and its event 
 Note that you can use custom workers without a pool.
 This effectively gives you direct access to a single event-driven thread.
 
-## Pools - Advanced
+## Pools
 
 As shown above, pools effectively allow a group of workers to share a work queue.
 They have a few additional methods described below:
@@ -94,63 +156,6 @@ They have a few additional methods described below:
 
     # Resize the pool size to a specific value.
     pool.resize(20)
-
-## Tasks
-
-Tasks and task groups build on top of worker pools.
-They provide a means of parallelizing expensive computations and collecing the results.
-These are the classes you normally work with in your application level code.
-
-    # Create a task group (it contains a pool of workers).
-    group = Workers::TaskGroup.new
-
-    # Add tasks to the group.
-    10.times do |i|
-      10.times do |j|
-        group.add(i, j) do
-          group.synchronize { puts "Computing #{i} * #{j}..." }
-          i * j # Last statement executed is the result of the task.
-        end
-      end
-    end
-
-    # Execute the tasks (blocks until the tasks complete).
-    # Returns true if all tasks succeed.  False if any fail.
-    group.run
-
-    # Return an array of all the tasks.
-    group.tasks
-
-    # Return an array of the successful tasks.
-    group.successes
-
-    # Return an array of the failed tasks.
-    group.failures
-
-    # Review the results.
-    group.tasks.each do |t|
-      t.succeeded? # True or false (false if an exception occurred).
-      t.failed?    # True or false (true if an exception occurred).
-      t.args       # Input arguments (the value of i in this example).
-      t.result     # Output value (the result of i * i in this example).
-      t.exception  # The exception if one exists.
-    end
-
-Note that instances of TaskGroup provide a 'synchronize' method.
-This method uses a mutex so you can serialize portions of your tasks that aren't thread safe.
-
-## Parallel Map
-
-Task groups and tasks are the building blocks of parallel map:
-
-    group = Workers::TaskGroup.new
-    group.map([1,2,3,4,5]) { |i| i * i }
-
-The below syntax is equivalent to the above:
-
-    Workers.map([1, 2, 3, 4, 5]) { |i| i * i }
-
-Note that any failures will cause an exception to be raised.
 
 ## Timers
 
