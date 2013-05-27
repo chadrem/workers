@@ -17,3 +17,5 @@ test/version_tmp
 tmp
 .rvmrc
 *.swp
+.ruby-version
+.ruby-gemset
