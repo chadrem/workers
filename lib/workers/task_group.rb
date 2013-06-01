@@ -36,6 +36,8 @@ module Workers
       @state = :running
       @run_thread = Thread.current
 
+      return [] if @tasks.empty?
+
       @internal_lock.synchronize do
         @tasks.each do |task|
           @pool.perform { task.run }
