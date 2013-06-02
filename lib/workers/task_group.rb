@@ -18,14 +18,13 @@ module Workers
       return nil
     end
 
-    def add(*args, &block)
+    def add(options = {}, &block)
       state!(:initialized)
 
-      if args[0].is_a?(Workers::Task)
-        @tasks << args[0]
-      else
-        @tasks << Workers::Task.new(:args => args, :perform => block, :finished => method(:finished))
-      end
+      options[:finished] = method(:finished)
+      options[:perform] ||= block
+
+      @tasks << Workers::Task.new(options)
 
       return nil
     end
@@ -59,7 +58,7 @@ module Workers
 
     def map(inputs, &block)
       inputs.each do |input|
-        add(input) do |i|
+        add(:args => input) do |i|
           block.call(i)
         end
       end
