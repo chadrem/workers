@@ -76,6 +76,8 @@ The main benefit is that you get to decide how you want to handle exceptions.
       t.args       # Input arguments (the value of i in this example).
       t.result     # Output value (the result of i * i in this example).
       t.exception  # The exception if one exists.
+      t.max_tries  # Maximum number of attempts.
+      t.tries      # Actual number of attempts.
     end
 
 Note that instances of TaskGroup provide a 'synchronize' method.

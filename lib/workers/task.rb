@@ -6,6 +6,8 @@ module Workers
     attr_reader :result
     attr_reader :exception
     attr_reader :state
+    attr_reader :max_tries
+    attr_reader :tries
 
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
