@@ -22,7 +22,7 @@ Or install it yourself as:
 ## Parallel Map
 
 Parallel map is the simplest way to get started with the Workers gem.
-It is similar to Ruby's built in Array#map method except each element is mapped in parallel.
+It is similar to Ruby's built-in Array#map method except each element is mapped in parallel.
 
     Workers.map([1, 2, 3, 4, 5]) { |i| i * i }
 
