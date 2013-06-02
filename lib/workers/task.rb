@@ -12,7 +12,11 @@ module Workers
       @args = options[:args] || []
       @perform = options[:perform] || raise('Perform callback is required.')
       @finished = options[:finished]
+      @max_tries = options[:max_tries] || 1
       @state = :initialized
+      @tries = 0
+
+      raise 'max_tries must be >= 1' unless @max_tries >= 1
 
       return nil
     end
@@ -22,12 +26,17 @@ module Workers
 
       @state = :running
 
-      begin
-        @result = @perform.call(*@args)
-        @state = :succeeded
-      rescue Exception => e
-        @state = :failed
-        @exception = e
+      while(@tries < @max_tries && @state != :succeeded)
+        @tries += 1
+
+        begin
+          @result = @perform.call(*@args)
+          @state = :succeeded
+          @exception = nil
+        rescue Exception => e
+          @state = :failed
+          @exception = e
+        end
       end
 
       @finished.call(self)

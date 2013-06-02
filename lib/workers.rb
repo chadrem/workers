@@ -33,9 +33,9 @@ module Workers
     @scheduler = val
   end
 
-  def self.map(vals, &block)
-    return Workers::TaskGroup.new.map(vals) do |v|
-      block.call(v)
+  def self.map(inputs, options = {}, &block)
+    return Workers::TaskGroup.new.map(inputs, options) do |i|
+      block.call(i)
     end
   end
 end

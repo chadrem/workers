@@ -56,9 +56,9 @@ module Workers
       return @tasks.select { |t| t.failed? }
     end
 
-    def map(inputs, &block)
+    def map(inputs, options = {}, &block)
       inputs.each do |input|
-        add(:args => input) do |i|
+        add(:args => input, :max_tries => options[:max_tries]) do |i|
           block.call(i)
         end
       end

@@ -27,7 +27,16 @@ It is similar to Ruby's built in Array#map method except each element is mapped 
     Workers.map([1, 2, 3, 4, 5]) { |i| i * i }
 
 Any exceptions while mapping with cause the entire map method to fail.
-Parallel map is built on top of the Task and TaskGroup classes (explained below).
+If your block is prone to temporary failures (exceptions), you can retry it.
+
+    Workers.map([1, 2, 3, 4, 5], :max_tries => 100) do |i|
+      if rand <= 0.5
+        puts "Sometimes I like to fail while computing #{i} * #{i}."
+        raise 'sad face'
+      end
+
+      i * i
+    end
 
 ## Tasks
 
@@ -84,8 +93,9 @@ This method uses a mutex so you can serialize portions of your tasks that aren't
       :perform => proc {},              # Required option.  Block of code to run.
       :args => [],                      # Array of arguments passed to the 'perform' block.
       :finished => nil,                 # Callback to execute after attempting to run the task.
+      :max_tries => 1,                  # Number of times to try completing the task (without an exception).
     )
-    
+
 ## Workers
 
 #### Basic
@@ -153,7 +163,7 @@ This effectively gives you direct access to a single event-driven thread.
       :logger => nil,                   # Ruby Logger instance.
       :input_queue => nil               # Ruby Queue used for input events.
     )
-    
+
 ## Pools
 
 As shown above, pools effectively allow a group of workers to share a work queue.
@@ -201,7 +211,7 @@ Timers provide a way to execute code in the future:
 
     # Shutdown the timer.
     timer.cancel
-    
+
 #### Options
 
     timer = Workers::Timer.new(1,
