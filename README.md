@@ -19,11 +19,19 @@ Or install it yourself as:
 
     $ gem install workers
 
+## Parallel Map
+
+Parallel map is the simplest way to get started with the Workers gem.
+It is similar to Ruby's built in Array#map method except each element is mapped in parallel.
+
+    Workers.map([1, 2, 3, 4, 5]) { |i| i * i }
+
+Any exceptions while mapping with cause the entire map method to fail.
+Parallel map is built on top of the Task and TaskGroup classes (explained below).
+
 ## Tasks
 
-Tasks and task groups build on top of pools of worker threads.
-They provide a means of parallelizing expensive computations, collecing results, and handling exceptions.
-These are the classes you normally work with in your application level code because they remove boiletplate.
+Tasks and task groups provide more flexibility than parallel map.
 
     # Create a task group (it contains a pool of worker threads).
     group = Workers::TaskGroup.new
@@ -31,7 +39,7 @@ These are the classes you normally work with in your application level code beca
     # Add tasks to the group.
     10.times do |i|
       10.times do |j|
-        group.add(i, j) do
+        group.add do
           group.synchronize { puts "Computing #{i} * #{j}..." }
           i * j # Last statement executed is the result of the task.
         end
@@ -63,25 +71,25 @@ These are the classes you normally work with in your application level code beca
 Note that instances of TaskGroup provide a 'synchronize' method.
 This method uses a mutex so you can serialize portions of your tasks that aren't thread safe.
 
-## Parallel Map
+#### Options
 
-Parallel Map is syntactic sugar for tasks and task groups:
+    group = Workers::TaskGroup.new(
+      :logger => nil,                   # Ruby logger instance.
+      :pool => Workers.pool             # The workers pool used to execute timer callbacks.
+    )
 
-    group = Workers::TaskGroup.new
-    group.map([1,2,3,4,5]) { |i| i * i }
+    task = Workers::Task.new(
+      :logger => nil,                   # Ruby logger instance.
+      :perform => proc {},              # Required option.  Block of code to run.
+      :args => [],                      # Array of arguments passed to the 'perform' block.
+      :finished => nil,                 # Callback to execute after attempting to run the task.
+    )
+    
+## Workers
 
-The above syntax is equivalent to the below:
+#### Basic
 
-    Workers.map([1, 2, 3, 4, 5]) { |i| i * i }
-
-Note that any task failures (exceptions) will cause an exception to be raised.
-This means that parallel map is "all or nothing" where as tasks and task groups leave error processing up to you.
-
-## Workers - Basic
-
-There are many cases where tasks, task groups, and parallel map are too high-level.
-Fortunately you can use the lower level Worker class to solve these problems.
-The main purpose of the Worker class is to add an event system on top of the Thread class.
+The main purpose of the Worker class is to add an event system on top of Ruby's built-in Thread class.
 This greatly simplifies inter-thread communication.
 
     # Initialize a worker pool.
@@ -103,7 +111,7 @@ This greatly simplifies inter-thread communication.
     # Wait for the workers to shutdown.
     pool.join
 
-## Workers - Advanced
+#### Advanced
 
 The Worker class is designed to be customized through inheritence and its event system:
 
@@ -138,6 +146,13 @@ The Worker class is designed to be customized through inheritence and its event 
 Note that you can use custom workers without a pool.
 This effectively gives you direct access to a single event-driven thread.
 
+#### Options
+
+    worker = Workers::Worker.new(
+      :logger => nil,                   # Ruby Logger instance.
+      :input_queue => nil               # Ruby Queue used for input events.
+    )
+    
 ## Pools
 
 As shown above, pools effectively allow a group of workers to share a work queue.
@@ -158,6 +173,14 @@ They have a few additional methods described below:
     # Resize the pool size to a specific value.
     pool.resize(20)
 
+#### Options
+
+    pool = Workers::Pool.new(
+      :size => 20,                      # Number of threads to create.
+      :logger => nil,                   # Ruby Logger instance.
+      :worker_class => Workers::Worker  # Class of worker to use for this pool.
+    )
+
 ## Timers
 
 Timers provide a way to execute code in the future:
@@ -177,6 +200,21 @@ Timers provide a way to execute code in the future:
 
     # Shutdown the timer.
     timer.cancel
+    
+#### Options
+
+    timer = Workers::Timer.new(1,
+      :logger => nil,                   # Ruby logger instance.
+      :repeat => false,                 # Repeat the timer until 'cancel' is called.
+      :scheduler => Workers.scheduler,  # The scheduler that manages execution.
+      :callback => nil                  # The proc to execute (provide this or a block, but not both).
+    )
+
+    timer = Workers::PeriodicTimer.new(1,
+      :logger => nil,                   # Ruby logger instance.
+      :scheduler => Workers.scheduler,  # The scheduler that manages execution.
+      :callback => nil                  # The proc to execute (provide this or a block, but not both).
+    )
 
 ## Schedulers
 
@@ -201,43 +239,7 @@ You can create additional or custom ones as necessary:
     # Shutdown the scheduler.
     scheduler.dispose
 
-## Options (defaults below):
-
-    pool = Workers::Pool.new(
-      :size => 20,                      # Number of threads to create.
-      :logger => nil,                   # Ruby Logger instance.
-      :worker_class => Workers::Worker  # Class of worker to use for this pool.
-    )
-
-    worker = Workers::Worker.new(
-      :logger => nil,                   # Ruby Logger instance.
-      :input_queue => nil               # Ruby Queue used for input events.
-    )
-
-    timer = Workers::Timer.new(1,
-      :logger => nil,                   # Ruby logger instance.
-      :repeat => false,                 # Repeat the timer until 'cancel' is called.
-      :scheduler => Workers.scheduler,  # The scheduler that manages execution.
-      :callback => nil                  # The proc to execute (provide this or a block, but not both).
-    )
-
-    group = Workers::TaskGroup.new(
-      :logger => nil,                   # Ruby logger instance.
-      :pool => Workers.pool             # The workers pool used to execute timer callbacks.
-    )
-
-    task = Workers::Task.new(
-      :logger => nil,                   # Ruby logger instance.
-      :perform => proc {},              # Required option.  Block of code to run.
-      :args => [],                      # Array of arguments passed to the 'perform' block.
-      :finished => nil,                 # Callback to execute after attempting to run the task.
-    )
-
-    timer = Workers::PeriodicTimer.new(1,
-      :logger => nil,                   # Ruby logger instance.
-      :scheduler => Workers.scheduler,  # The scheduler that manages execution.
-      :callback => nil                  # The proc to execute (provide this or a block, but not both).
-    )
+#### Options
 
     scheduler = Workers::Scheduler.new(
       :logger => nil,                   # Ruby logger instance.
