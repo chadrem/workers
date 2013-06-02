@@ -168,8 +168,9 @@ This effectively gives you direct access to a single event-driven thread.
 
 ## Pools
 
-As shown above, pools effectively allow a group of workers to share a work queue.
-They have a few additional methods described below:
+Pools allow a group of workers to share a work queue.
+The Workers gem has a default pool (Workers.pool) with 20 workers so in most cases you won't need to create your own.
+Pools can be adjusted using the below methods:
 
     # Create a pool.
     pool = Workers::Pool.new
@@ -232,8 +233,9 @@ Timers provide a way to execute code in the future:
 ## Schedulers
 
 Schedulers are what trigger Timers to fire.
-The system has a global default scheduler which should meet most needs (Workers.scheduler).
-You can create additional or custom ones as necessary:
+The Workers gem has a default scheduler (Workers.scheduler) so in most cases you won't need to create your own.
+Schedulers execute timers using a pool of workers so make sure your timer block is thread safe.
+You can create additional schedulers as necessary:
 
     # Create a workers pool with a larger than default thread count (optional).
     pool = Workers::Pool.new(:size => 100)
