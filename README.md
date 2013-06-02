@@ -32,6 +32,7 @@ Parallel map is built on top of the Task and TaskGroup classes (explained below)
 ## Tasks
 
 Tasks and task groups provide more flexibility than parallel map.
+The main benefit is that you get to decide how you want to handle exceptions.
 
     # Create a task group (it contains a pool of worker threads).
     group = Workers::TaskGroup.new
