@@ -58,7 +58,7 @@ module Workers
 
     def map(inputs, options = {}, &block)
       inputs.each do |input|
-        add(:args => input, :max_tries => options[:max_tries]) do |i|
+        add(:input => input, :max_tries => options[:max_tries]) do |i|
           block.call(i)
         end
       end
@@ -66,7 +66,7 @@ module Workers
       run
 
       if (failure = failures[0])
-        a = failure.args.inspect
+        a = failure.input.inspect
         m = failure.exception.message
         b = failure.exception.backtrace.join("\n")
 

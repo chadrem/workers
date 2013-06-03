@@ -2,7 +2,7 @@ module Workers
   class Task
     include Workers::Helpers
 
-    attr_reader :args
+    attr_reader :input
     attr_reader :result
     attr_reader :exception
     attr_reader :state
@@ -11,7 +11,7 @@ module Workers
 
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
-      @args = options[:args] || []
+      @input = options[:input] || []
       @perform = options[:perform] || raise('Perform callback is required.')
       @finished = options[:finished]
       @max_tries = options[:max_tries] || 1
@@ -32,7 +32,7 @@ module Workers
         @tries += 1
 
         begin
-          @result = @perform.call(*@args)
+          @result = @perform.call(@input)
           @state = :succeeded
           @exception = nil
         rescue Exception => e

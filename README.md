@@ -73,7 +73,7 @@ The main benefit is that you get to decide how you want to handle exceptions.
     group.tasks.each do |t|
       t.succeeded? # True or false (false if an exception occurred).
       t.failed?    # True or false (true if an exception occurred).
-      t.args       # Input arguments (the value of i in this example).
+      t.input      # Input value.
       t.result     # Output value (the result of i * i in this example).
       t.exception  # The exception if one exists.
       t.max_tries  # Maximum number of attempts.
