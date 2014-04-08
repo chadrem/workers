@@ -104,6 +104,9 @@ This method uses a mutex so you can serialize portions of your tasks that aren't
 
 The main purpose of the Worker class is to add an event system on top of Ruby's built-in Thread class.
 This greatly simplifies inter-thread communication.
+Workers are fairly low level and don't handle exceptions for you.
+This way you can decide how you want to handle exceptions (or not handle them).
+Failing to handle exceptions will result in dead workers so in most cases you will want to do so.
 
     # Initialize a worker pool.
     pool = Workers::Pool.new
@@ -111,8 +114,12 @@ This greatly simplifies inter-thread communication.
     # Perform some work in the background.
     100.times do
       pool.perform do
-        sleep(rand(3))
-        puts "Hello world from thread #{Thread.current.object_id}"
+        begin
+          sleep(rand(3))
+          puts "Hello world from thread #{Thread.current.object_id}"
+        rescue Exception => e
+          puts "Oh no, my hello world failed!"
+        end
       end
     end
 
@@ -134,8 +141,12 @@ The Worker class is designed to be customized through inheritence and its event 
       def process_event(event)
         case event.command
         when :my_custom
-          puts "Worker received custom event: #{event.data}"
-          sleep(1)
+          begin
+            puts "Worker received custom event: #{event.data}"
+            sleep(1)
+          rescue Exception => e
+            puts "This is a very sad program."
+          end
         end
       end
     end
