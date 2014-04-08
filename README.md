@@ -208,7 +208,8 @@ Pools can be adjusted using the below methods:
 
 ## Timers
 
-Timers provide a way to execute code in the future:
+Timers provide a way to execute code in the future.
+You can easily use them to tell a Worker or it's higher level classes (Task, TaskGroup, etc) to perform work in the future.
 
     # Create a one shot timer that executes in 1.5 seconds.
     timer = Workers::Timer.new(1.5) do
