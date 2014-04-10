@@ -273,6 +273,10 @@ You can create additional schedulers as necessary:
       :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
     )
 
+## Concurrency in MRI and JRuby
+
+This gem has been tested with MRI Ruby 1.9.3 and JRuby 1.7. Due to [MRI’s thread limitations (GIL)](http://blog.paracode.com/2012/09/07/pragmatic-concurrency-with-ruby/), effectively only a single thread will run at any given point in time, resulting in non-concurrent parallelism. It is highly recommended that you use JRuby if you are concerned about multi-core CPU performance and concurrency.
+
 ## Contributing
 
 1. Fork it
