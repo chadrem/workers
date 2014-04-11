@@ -273,7 +273,7 @@ You can create additional schedulers as necessary:
       :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
     )
 
-## Concurrency
+## Concurrency and performance
 
 Workers is tested with both JRuby and MRI (C Ruby).
 Below are some notes specific to each Ruby implementation.
@@ -283,8 +283,10 @@ In summary, JRuby is the recommended Ruby to use with Workers since it provides 
 
 JRuby is designed for multi-threaded apps running on multiple cores.
 When used with Workers, you will be able to saturate all of your CPU cores with little to no tuning.
-If you have more than 20 cores, then it is recommended you increase the number of workers in your pool.
-A good starting point would be one worker per core for CPU bound apps.
+It is highly recommended you increase the number of workers in your pool if you have a large number of cores.
+A good starting point is 1x - 2x the number of cores for CPU bound apps.
+For IO bound apps you will need to do some benchmarking to figure out what is best for you.
+A good starting point is 4x - 10x the number of cores for IO bound apps.
 
 #### MRI 1.9.x or newer (supported)
 
