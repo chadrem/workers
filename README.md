@@ -105,8 +105,7 @@ This method uses a mutex so you can serialize portions of your tasks that aren't
 The main purpose of the Worker class is to add an event system on top of Ruby's built-in Thread class.
 This greatly simplifies inter-thread communication.
 Workers are fairly low level and don't handle exceptions for you.
-This way you can decide how you want to handle exceptions (or not handle them).
-Failing to handle exceptions will result in dead workers so in most cases you will want to do so.
+Failing to handle exceptions will result in dead workers so you must rescue them in your application code.
 
     # Initialize a worker pool.
     pool = Workers::Pool.new
