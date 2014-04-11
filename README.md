@@ -297,11 +297,16 @@ The good news is IO bound applications will still see huge benefits from Workers
 One example of such an application is making web requests (web services or a web crawler).
 This is because making remote HTTP requests is relatively slow compared to modern CPUs and so a lot of cycles get spent waiting on network IO.
 
-### MRI 1.8.x or older (not supported)
+#### MRI 1.8.x or older (not supported)
 
 These old versions of Ruby used green threads (application layer threads) instead of operating system level threads.
 I recommend you upgrade to a newer version as I haven't tested Workers with them.
 They also aren't officially supported by the Ruby community at this point.
+
+#### Rubinius
+
+I haven't tested Workers with Rubinius, but in theory it should just work.
+The above JRuby notes should apply.
 
 ## Contributing
 
