@@ -273,9 +273,33 @@ You can create additional schedulers as necessary:
       :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
     )
 
-## Concurrency in MRI and JRuby
+## Concurrency
 
-This gem has been tested with MRI Ruby 1.9.3 and JRuby 1.7. Due to [MRI’s thread limitations (GIL)](http://blog.paracode.com/2012/09/07/pragmatic-concurrency-with-ruby/), effectively only a single thread will run at any given point in time, resulting in non-concurrent parallelism. It is highly recommended that you use JRuby if you are concerned about multi-core CPU performance and concurrency.
+Workers is tested with both JRuby and MRI (C Ruby).
+Below are some notes specific to each Ruby implementation.
+In summary, JRuby is the recommended Ruby to use with Workers since it provides the highest performance with multiple CPU cores.
+
+#### JRuby (recommended)
+
+JRuby is designed for multi-threaded apps running on multiple cores.
+When used with Workers, you will be able to saturate all of your CPU cores with little to no tuning.
+If you have more than 20 cores, then it is recommended you increase the number of workers in your pool.
+A good starting point would be one worker per core for CPU bound apps.
+
+#### MRI 1.9.x or newer (supported)
+
+MRI 1.9 uses real operating system threads with a global interpreter lock (GIL).
+The bad news is that due to the GIL, only one thread can execute Ruby code at a given point in time.
+This means your app will be CPU bound to a single core.
+The good news is IO bound applications will still see huge benefits from Workers.
+One example of such an application is making web requests (web services or a web crawler).
+This is because making remote HTTP requests is relatively slow compared to modern CPUs and so a lot of cycles get spent waiting on network IO.
+
+### MRI 1.8.x or older (not supported)
+
+These old versions of Ruby used green threads (application layer threads) instead of operating system level threads.
+I recommend you upgrade to a newer version as I haven't tested Workers with them.
+They also aren't officially supported by the Ruby community at this point.
 
 ## Contributing
 
