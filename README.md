@@ -167,8 +167,30 @@ The Worker class is designed to be customized through inheritence and its event 
     # Wait for the workers to shutdown.
     pool.join
 
-Note that you can use custom workers without a pool.
+#### Without pools
+
+In most cases you will be using a group of workers (a pool) as demonstrated above.
+In certain cases, you may want to use a worker directly without the pool.
 This effectively gives you direct access to a single event-driven thread.
+Note that you must handle exceptions yourself since you are working directly with the worker class:
+
+    # Create a single worker.
+    worker = Workers::Worker.new
+    
+    # Perform some work in the background.
+    25.times do |i|
+      worker.perform do
+        begin
+          sleep(0.1)
+          puts "Hello world from thread #{Thread.current.object_id}"
+        rescue Exception => e
+          puts "Oh no, my hello world failed!"
+        end
+      end
+    end
+    
+    # Tell the worker to shutdown.
+    worker.shutdown
 
 #### Options
 
