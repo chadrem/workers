@@ -293,9 +293,9 @@ A good starting point is 4x - 10x the number of cores for IO bound apps.
 MRI 1.9 uses real operating system threads with a global interpreter lock (GIL).
 The bad news is that due to the GIL, only one thread can execute Ruby code at a given point in time.
 This means your app will be CPU bound to a single core.
-The good news is IO bound applications will still see huge benefits from Workers.
-One example of such an application is making web requests (web services or a web crawler).
-This is because making remote HTTP requests is relatively slow compared to modern CPUs and so a lot of cycles get spent waiting on network IO.
+The good news is that IO bound applications will still see huge benefits from Workers.
+Examples of such IO are web service requests, web crawlers, database requests, writing to disk, etc.
+Threads performing such IO will temporarily release the GIL and thus let another thread execute Ruby code.
 
 #### MRI 1.8.x or older (not supported)
 
