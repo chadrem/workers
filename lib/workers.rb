@@ -47,7 +47,7 @@ module Workers
     end
   end
 
-  def self.lock(:&block)
+  def self.lock(&block)
     (@lock ||= Monitor.new).synchronize { yield if block_given? }
   end
 end
