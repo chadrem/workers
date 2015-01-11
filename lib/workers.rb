@@ -16,26 +16,34 @@ require 'workers/task_group'
 
 module Workers
   def self.pool
-    return @pool ||= Workers::Pool.new
+    lock do
+      return @pool ||= Workers::Pool.new
+    end
   end
 
   def self.pool=(val)
-    @pool.dispose if @pool
-    @pool = val
+    lock do
+      @pool.dispose if @pool
+      @pool = val
+    end
   end
 
   def self.scheduler
-    return @scheduler ||= Workers::Scheduler.new
+    lock do
+      return @scheduler ||= Workers::Scheduler.new
+    end
   end
 
   def self.scheduler=(val)
-    @scheduler.dispose if @scheduler
-    @scheduler = val
+    lock do
+      @scheduler.dispose if @scheduler
+      @scheduler = val
+    end
   end
 
   def self.map(inputs, options = {}, &block)
     return Workers::TaskGroup.new.map(inputs, options) do |i|
-      block.call(i)
+      yield(i)
     end
   end
 
