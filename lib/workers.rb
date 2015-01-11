@@ -38,8 +38,11 @@ module Workers
       block.call(i)
     end
   end
+
+  def self.lock(:&block)
+    (@lock ||= Monitor.new).synchronize { yield if block_given? }
+  end
 end
 
 # Force initialization of defaults.
-Workers.pool
-Workers.scheduler
+Workers.lock
