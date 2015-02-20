@@ -4,7 +4,7 @@ module Workers
 
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
-      @pool = options[:pool] || Workers.pool
+      @pool = options[:pool] || Workers::Pool.new
       @schedule = SortedSet.new
       @mutex = Mutex.new
       @thread = Thread.new { start_loop }
