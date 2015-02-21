@@ -16,13 +16,13 @@ module Workers
     end
 
     def schedule(timer)
-      @schedulers[timer.object_id % @options[:bucket_size]].schedule(timer)
+      @schedulers[timer.hash % @options[:bucket_size]].schedule(timer)
 
       return nil
     end
 
     def unschedule(timer)
-      @schedulers[timer.object_id % @options[:bucket_size]].unschedule(timer)
+      @schedulers[timer.hash % @options[:bucket_size]].unschedule(timer)
 
       return nil
     end
