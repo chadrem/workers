@@ -27,7 +27,7 @@ module Workers
         @schedule.delete(timer)
       end
 
-      return true
+      return nil
     end
 
     def wakeup
