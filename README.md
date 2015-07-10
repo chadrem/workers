@@ -5,6 +5,18 @@ Design goals include high performance, low latency, simple API, customizability,
 It provides a number of simple to use classes that solve a wide range of concurrency problems.
 It is used by [Tribe](https://github.com/chadrem/tribe "Tribe") to implement event-driven actors.
 
+## Contents
+
+- [Installation](#installation)
+- [Parallel Map](#parallel-map)
+- [Tasks](#tasks)
+- [Workers](#workers)
+- [Pools](#pools)
+- [Timers](#timers)
+- [Schedulers](#schedulers)
+- [oncurrency and performance](#concurrency-and-performance)
+- [Contributing](#contributing)
+
 ## Installation
 
 Add this line to your application's Gemfile:
