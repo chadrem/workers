@@ -14,7 +14,7 @@ It is used by [Tribe](https://github.com/chadrem/tribe "Tribe") to implement eve
 - [Pool](#pools)
 - [Timers](#timers)
 - [Schedulers](#schedulers)
-- [Concurrency and Performance](#concurrency-and-performance)
+- [Concurrency and performance](#concurrency-and-performance)
 - [Contributing](#contributing)
 
 ## Installation
