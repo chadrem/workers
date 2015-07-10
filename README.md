@@ -1,4 +1,4 @@
-# Workers
+# Workers - Ruby Gem
 
 Workers is a Ruby gem for performing work in background threads.
 Design goals include high performance, low latency, simple API, customizability, and multi-layered architecture.
@@ -11,7 +11,7 @@ It is used by [Tribe](https://github.com/chadrem/tribe "Tribe") to implement eve
 - [Parallel Map](#parallel-map)
 - [Tasks](#tasks)
 - [Workers](#workers)
-- [Pools](#pools)
+- [Pool](#pools)
 - [Timers](#timers)
 - [Schedulers](#schedulers)
 - [oncurrency and performance](#concurrency-and-performance)
