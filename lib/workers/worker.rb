@@ -2,6 +2,8 @@ module Workers
   class Worker
     include Workers::Helpers
 
+    attr_reader :exception
+
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
       @input_queue = options[:input_queue] || Queue.new
@@ -65,19 +67,23 @@ module Workers
     end
 
     def shutdown_handler(event)
-      event.data.call(self) if event.data
+      event.data.call(self) if event.data && event.data.is_a?(Proc)
     end
 
     def perform_handler(event)
-      event.data.call if event.data
+      event.data.call
+    rescue Exception => e
+      exception_handler(e)
     end
 
     def exception_handler(e)
-      puts concat_e('Worker event loop died.', e)
+      @exception = e
     end
 
     def process_event(event)
-      raise "Unhandled event (#{event.inspect}). Subclass and override if you need custom events."
+      raise ::Workers::UnknownEventError, 'You must override this method to process custom events.'
+    rescue Exception => e
+      exception_handler(e)
     end
   end
 end

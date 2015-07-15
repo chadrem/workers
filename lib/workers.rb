@@ -3,6 +3,7 @@ require 'monitor'
 require 'set'
 
 require 'workers/version'
+require 'workers/exceptions'
 require 'workers/helpers'
 require 'workers/worker'
 require 'workers/pool'

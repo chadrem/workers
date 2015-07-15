@@ -1,13 +1,10 @@
 require "bundler/gem_tasks"
+require "rake/testtask"
 
-desc 'Start an IRB console with Workers loaded'
-task :console do
-  $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'lib'))
-
-  require 'workers'
-  require 'irb'
-
-  ARGV.clear
-
-  IRB.start
+Rake::TestTask.new(:test) do |t|
+  t.libs << "test"
+  t.libs << "lib"
+  t.test_files = FileList['test/**/*_test.rb']
 end
+
+task :default => :test

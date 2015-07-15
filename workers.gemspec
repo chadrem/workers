@@ -1,19 +1,24 @@
-# -*- encoding: utf-8 -*-
+# coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'workers/version'
 
-Gem::Specification.new do |gem|
-  gem.name          = 'workers'
-  gem.version       = Workers::VERSION
-  gem.authors       = ['Chad Remesch']
-  gem.email         = ['chad@remesch.com']
-  gem.description   = %q{Workers is a Ruby gem for performing work in background threads.}
-  gem.summary       = %q{Workers is a Ruby gem for performing work in background threads. Design goals include high performance, low latency, simple API, customizability, and multi-layered architecture. It provides a number of simple to use classes that solve a wide range of concurrency problems.}
-  gem.homepage      = 'https://github.com/chadrem/workers'
+Gem::Specification.new do |spec|
+  spec.name          = "workers"
+  spec.version       = Workers::VERSION
+  spec.authors       = ["Chad Remesch"]
+  spec.email         = ["chad@remesch.com"]
 
-  gem.files         = `git ls-files`.split($/)
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.require_paths = ['lib']
+  spec.summary       = %q{A Ruby gem for performing work in background threads.}
+  spec.homepage      = "https://github.com/chadrem/workers"
+  spec.license       = "MIT"
+
+  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  spec.bindir        = "exe"
+  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.require_paths = ["lib"]
+
+  spec.add_development_dependency "bundler", "~> 1.10"
+  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "minitest"
 end
