@@ -20,7 +20,7 @@ module Workers
 
       raise Workers::MaxTriesError, 'max_tries must be >= 1' unless @max_tries >= 1
 
-      return nil
+      nil
     end
 
     def run
@@ -43,15 +43,15 @@ module Workers
 
       @finished.call(self)
 
-      return nil
+      nil
     end
 
     def succeeded?
-      return @state == :succeeded
+      @state == :succeeded
     end
 
     def failed?
-      return @state == :failed
+      @state == :failed
     end
   end
 end

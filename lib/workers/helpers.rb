@@ -17,7 +17,7 @@ module Workers
     end
 
     def concat_e(msg, e = nil)
-      return e ? "#{msg}\nEXCEPTION: #{e.message}\n#{e.backtrace.join("\n")}\n--" : msg
+      e ? "#{msg}\nEXCEPTION: #{e.message}\n#{e.backtrace.join("\n")}\n--" : msg
     end
   end
 end

@@ -7,7 +7,7 @@ module Workers
       @command = command
       @data = data
 
-      return nil
+      nil
     end
   end
 end

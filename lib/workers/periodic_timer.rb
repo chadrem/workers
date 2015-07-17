@@ -5,7 +5,7 @@ module Workers
 
       super(delay, options, &block)
 
-      return nil
+      nil
     end
   end
 end

@@ -15,7 +15,7 @@ module Workers
       @finished_count = 0
       @conditional = ConditionVariable.new
 
-      return nil
+      nil
     end
 
     def add(options = {}, &block)
@@ -26,7 +26,7 @@ module Workers
 
       @tasks << Workers::Task.new(options)
 
-      return nil
+      nil
     end
 
     def run
@@ -45,15 +45,15 @@ module Workers
         @conditional.wait(@internal_lock)
       end
 
-      return @tasks.all? { |t| t.succeeded? }
+      @tasks.all? { |t| t.succeeded? }
     end
 
     def successes
-      return @tasks.select { |t| t.succeeded? }
+      @tasks.select { |t| t.succeeded? }
     end
 
     def failures
-      return @tasks.select { |t| t.failed? }
+      @tasks.select { |t| t.failed? }
     end
 
     def map(inputs, options = {}, &block)
@@ -73,7 +73,7 @@ module Workers
         raise Workers::FailedTaskError, "At least one task failed. ARGS=#{a}, TRACE=#{m}\n#{b}\n----------\n"
       end
 
-      return tasks.map { |t| t.result }
+      tasks.map { |t| t.result }
     end
 
     # Convenient mutex to be used by a users's task code that needs serializing.
@@ -81,7 +81,7 @@ module Workers
     def synchronize(&block)
       @external_lock.synchronize { block.call }
 
-      return nil
+      nil
     end
 
     private
@@ -91,7 +91,7 @@ module Workers
         raise Workers::InvalidStateError, "Invalid state (#{@state})."
       end
 
-      return nil
+      nil
     end
 
     def finished(task)
@@ -100,7 +100,7 @@ module Workers
         @conditional.signal if @finished_count >= @tasks.count
       end
 
-      return nil
+      nil
     end
   end
 end

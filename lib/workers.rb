@@ -19,7 +19,7 @@ require 'workers/task_group'
 module Workers
   def self.pool
     lock do
-      return @pool ||= Workers::Pool.new
+      @pool ||= Workers::Pool.new
     end
   end
 
@@ -32,7 +32,7 @@ module Workers
 
   def self.scheduler
     lock do
-      return @scheduler ||= Workers::Scheduler.new
+      @scheduler ||= Workers::Scheduler.new
     end
   end
 

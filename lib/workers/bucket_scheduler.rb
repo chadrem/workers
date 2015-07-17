@@ -18,25 +18,25 @@ module Workers
     def schedule(timer)
       @schedulers[timer.hash % @options[:bucket_size]].schedule(timer)
 
-      return nil
+      nil
     end
 
     def unschedule(timer)
       @schedulers[timer.hash % @options[:bucket_size]].unschedule(timer)
 
-      return nil
+      nil
     end
 
     def wakeup
       @schedulers.each { |s| s.wakeup }
 
-      return nil
+      nil
     end
 
     def dispose
       @schedulers.each { |s| s.dispose }
 
-      return nil
+      nil
     end
   end
 end

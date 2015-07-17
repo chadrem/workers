@@ -9,7 +9,7 @@ module Workers
       @mutex = Mutex.new
       @thread = Thread.new { start_loop }
 
-      return nil
+      nil
     end
 
     def schedule(timer)
@@ -19,7 +19,7 @@ module Workers
 
       wakeup
 
-      return nil
+      nil
     end
 
     def unschedule(timer)
@@ -27,13 +27,13 @@ module Workers
         @schedule.delete(timer)
       end
 
-      return nil
+      nil
     end
 
     def wakeup
       @thread.wakeup
 
-      return nil
+      nil
     end
 
     def dispose
@@ -43,11 +43,11 @@ module Workers
         @thread.kill
       end
 
-      return nil
+      nil
     end
 
     def alive?
-      return @thread && @thread.alive?
+      @thread && @thread.alive?
     end
 
     private
@@ -64,7 +64,7 @@ module Workers
         delay ? sleep(delay) : sleep
       end
 
-      return nil
+      nil
     end
 
     def process_overdue
@@ -84,7 +84,7 @@ module Workers
         @schedule << timer if timer.repeat
       end
 
-      return nil
+      nil
     end
 
     def next_delay

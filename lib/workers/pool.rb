@@ -15,29 +15,19 @@ module Workers
 
       expand(options[:size] || Workers::Pool::DEFAULT_POOL_SIZE)
 
-      return nil
+      nil
     end
 
     def enqueue(command, data = nil)
       @input_queue.push(Event.new(command, data))
 
-      return nil
+      nil
     end
 
     def perform(&block)
-      e_callback = @exception_callback
+      enqueue(:perform, block)
 
-      safe_block = proc {
-        begin
-          block.call
-        rescue Exception => e
-          e_callback.call(e) if e_callback
-        end
-      }
-
-      enqueue(:perform, safe_block)
-
-      return nil
+      nil
     end
 
     def shutdown(&block)
@@ -47,7 +37,7 @@ module Workers
         end
       end
 
-      return nil
+      nil
     end
 
     def join(max_wait = nil)
@@ -55,35 +45,35 @@ module Workers
       @workers.clear
       @size = 0
 
-      return results
+      results
     end
 
     def dispose(max_wait = nil)
-      @lock.synchronize do
-        shutdown
-        return join(max_wait)
-      end
+      shutdown  
+      join(max_wait)
     end
 
     def inspect
-      return "#<#{self.class.to_s}:0x#{(object_id << 1).to_s(16)} size=#{size}>"
+      "#<#{self.class.to_s}:0x#{(object_id << 1).to_s(16)} size=#{size}>"
     end
 
     def size
       @lock.synchronize do
-        return @size
+        @size
       end
     end
 
     def expand(count)
       @lock.synchronize do
         count.times do
-            @workers << @worker_class.new(:input_queue => @input_queue)
-            @size += 1
+          worker = @worker_class.new(:input_queue => @input_queue, :die_on_exception => false,
+                                     :on_exception => @exception_callback, :logger => @logger)
+          @workers << worker
+          @size += 1
         end
       end
 
-      return nil
+      nil
     end
 
     def contract(count, &block)
@@ -101,7 +91,7 @@ module Workers
         end
       end
 
-      return nil
+      nil
     end
 
     def resize(new_size)
@@ -113,7 +103,7 @@ module Workers
         end
       end
 
-      return nil
+      nil
     end
 
     private
@@ -123,7 +113,7 @@ module Workers
         @workers.delete(worker)
       end
 
-      return nil
+      nil
     end
   end
 end

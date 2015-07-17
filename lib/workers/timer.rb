@@ -16,23 +16,22 @@ module Workers
       reset
       @scheduler.schedule(self)
 
-      return nil
+      nil
     end
 
     def <=>(other)
-      return sec_remaining <=> other.sec_remaining
+      sec_remaining <=> other.sec_remaining
     end
 
     def sec_remaining
       @mutex.synchronize do
         diff = @fire_at.to_f - Time.now.utc.to_f
-
-        return (diff > 0) ? diff : 0
+        (diff > 0) ? diff : 0
       end
     end
 
     def overdue?
-        return sec_remaining <= 0
+      sec_remaining <= 0
     end
 
     def fire
@@ -40,13 +39,13 @@ module Workers
         @callback.call if @callback
       end
 
-      return nil
+      nil
     end
 
     def cancel
       @scheduler.unschedule(self)
 
-      return nil
+      nil
     end
 
     def reset
@@ -54,7 +53,7 @@ module Workers
         @fire_at = Time.now.utc + @delay
       end
 
-      return nil
+      nil
     end
   end
 end

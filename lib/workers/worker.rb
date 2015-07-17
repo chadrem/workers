@@ -9,27 +9,27 @@ module Workers
       @input_queue = options[:input_queue] || Queue.new
       @thread = Thread.new { start_event_loop }
       @exception_callback = options[:on_exception]
-      @die_on_exception = options.include?(:die_on_exception) ? options[:die_on_exception]  : true
+      @die_on_exception = options.include?(:die_on_exception) ? options[:die_on_exception] : true
 
-      return nil
+      nil
     end
 
     def enqueue(command, data = nil)
       @input_queue.push(Event.new(command, data))
 
-      return nil
+      nil
     end
 
     def perform(&block)
       enqueue(:perform, block)
 
-      return nil
+      nil
     end
 
     def shutdown(&block)
       enqueue(:shutdown, block)
 
-      return nil
+      nil
     end
 
     def kill
@@ -52,19 +52,17 @@ module Workers
     end
 
     def alive?
-      return @thread && @thread.alive?
+      @thread && @thread.alive?
     end
 
     def inspect
-      return "#<#{self.class.to_s}:0x#{(object_id << 1).to_s(16)} #{alive? ? 'alive' : 'dead'}>"
+      "#<#{self.class.to_s}:0x#{(object_id << 1).to_s(16)} #{alive? ? 'alive' : 'dead'}>"
     end
 
     private
 
     def start_event_loop
       while process_event; end
-    rescue Exception => e
-      exception_handler(e)
     end
 
     def process_event
@@ -83,6 +81,7 @@ module Workers
       true
     rescue Exception => e
       exception_handler(e)
+      true
     end
 
     def shutdown_handler(event)
@@ -98,14 +97,9 @@ module Workers
     end
 
     def exception_handler(e)
-      if @exception_callback
-        @exception_callback.call(e)
-      end
-
-      if @die_on_exception
-        @exception = e
-        raise e
-      end
+      @exception = e
+      @exception_callback.call(e) if @exception_callback
+      raise(e) if @die_on_exception
 
       nil
     end
