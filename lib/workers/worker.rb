@@ -2,8 +2,6 @@ module Workers
   class Worker
     include Workers::Helpers
 
-    attr_reader :exception
-
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
       @input_queue = options[:input_queue] || Queue.new
@@ -31,7 +29,7 @@ module Workers
     end
 
     def join(max_wait = nil)
-      raise "Worker can't join itself." if @thread == Thread.current
+      raise JoinError, "Worker can't join itself." if @thread == Thread.current
 
       return true if !@thread.join(max_wait).nil?
 
@@ -77,13 +75,11 @@ module Workers
     end
 
     def exception_handler(e)
-      @exception = e
+      raise ::Workers::EventLoopDiedError
     end
 
     def process_event(event)
-      raise ::Workers::UnknownEventError, 'You must override this method to process custom events.'
-    rescue Exception => e
-      exception_handler(e)
+      raise ::Workers::UnknownEventError, "Unhandled event (#{event.inspect}). Subclass and override if you need custom events."
     end
   end
 end

@@ -79,7 +79,7 @@ module Workers
 
     def contract(count, &block)
       @lock.synchronize do
-        raise 'Count is too large.' if count > @size
+        raise PoolSizeError, 'Count is too large.' if count > @size
 
         count.times do
           callback = Proc.new do |worker|

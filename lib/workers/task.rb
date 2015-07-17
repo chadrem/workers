@@ -12,19 +12,19 @@ module Workers
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
       @input = options[:input] || []
-      @perform = options[:perform] || raise('Perform callback is required.')
+      @perform = options[:perform] || raise(MissingCallbackError, 'Perform callback is required.')
       @finished = options[:finished]
       @max_tries = options[:max_tries] || 1
       @state = :initialized
       @tries = 0
 
-      raise 'max_tries must be >= 1' unless @max_tries >= 1
+      raise MaxTriesError, 'max_tries must be >= 1' unless @max_tries >= 1
 
       return nil
     end
 
     def run
-      raise "Invalid state (#{@state})." unless @state == :initialized
+      raise InvalidStateError, "Invalid state (#{@state})." unless @state == :initialized
 
       @state = :running
 

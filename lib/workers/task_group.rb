@@ -70,7 +70,7 @@ module Workers
         m = failure.exception.message
         b = failure.exception.backtrace.join("\n")
 
-        raise "At least one task failed. ARGS=#{a}, TRACE=#{m}\n#{b}\n----------\n"
+        raise FailedTaskError, "At least one task failed. ARGS=#{a}, TRACE=#{m}\n#{b}\n----------\n"
       end
 
       return tasks.map { |t| t.result }
@@ -88,7 +88,7 @@ module Workers
 
     def state!(*args)
       unless args.include?(@state)
-        raise "Invalid state (#{@state})."
+        raise InvalidStateError, "Invalid state (#{@state})."
       end
 
       return nil
