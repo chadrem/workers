@@ -1,4 +1,4 @@
-# Workers - Ruby Gem
+# Workers [![Build Status](https://travis-ci.org/chadrem/workers.svg)](https://travis-ci.org/chadrem/workers) [![Coverage Status](https://coveralls.io/repos/chadrem/workers/badge.svg?branch=master&service=github)](https://coveralls.io/github/chadrem/workers?branch=master)
 
 Workers is a Ruby gem for performing work in background threads.
 Design goals include high performance, low latency, simple API, customizability, and multi-layered architecture.
