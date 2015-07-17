@@ -187,7 +187,7 @@ Note that you must handle exceptions yourself since you are working directly wit
 
     # Create a single worker.
     worker = Workers::Worker.new
-    
+
     # Perform some work in the background.
     25.times do |i|
       worker.perform do
@@ -199,7 +199,7 @@ Note that you must handle exceptions yourself since you are working directly wit
         end
       end
     end
-    
+
     # Tell the worker to shutdown.
     worker.shutdown
 
@@ -306,11 +306,16 @@ You can create additional schedulers as necessary:
       :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
     )
 
-#### Bucket scheduler
+#### Bucket Schedulers
 
-Workers comes with an specialized scheduler designed to work around lock contention.
-This is accomplished by using many pools (100 by default) each with a single worker.
+The Bucket scheduler class is a specialized scheduler designed to work around lock contention.
+This is accomplished by using many pools (100 by default) each with a small number of workers (1 by default).
 Timers are assigned to a scheduler by their ````hash```` value.
+Most users will never need to use this class, but it is documented here for completeness.
+Both the number of buckets and the number of workers assigned to each bucket are configurable.
+
+    # Create a bucket scheduler.
+    scheduler = Workers::BucketScheduler.new
 
 ## Concurrency and performance
 
