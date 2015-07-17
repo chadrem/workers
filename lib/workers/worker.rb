@@ -2,10 +2,14 @@ module Workers
   class Worker
     include Workers::Helpers
 
+    attr_accessor :exception
+
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
       @input_queue = options[:input_queue] || Queue.new
       @thread = Thread.new { start_event_loop }
+      @exception_callback = options[:on_exception]
+      @die_on_exception = options.include?(:die_on_exception) ? options[:die_on_exception]  : true
 
       return nil
     end
@@ -28,12 +32,23 @@ module Workers
       return nil
     end
 
+    def kill
+      @thread.kill
+
+      nil
+    end
+
     def join(max_wait = nil)
-      raise JoinError, "Worker can't join itself." if @thread == Thread.current
+      raise Workers::JoinError, "Worker can't join itself." if @thread == Thread.current
 
       return true if !@thread.join(max_wait).nil?
 
       @thread.kill and return false
+    end
+
+    def dispose(max_wait = nil)
+      shutdown
+      join(max_wait)
     end
 
     def alive?
@@ -47,39 +62,52 @@ module Workers
     private
 
     def start_event_loop
-      while true
-        event = @input_queue.pop
+      while process_event; end
+    rescue Exception => e
+      exception_handler(e)
+    end
 
-        case event.command
-        when :shutdown
-          shutdown_handler(event)
-          return nil
-        when :perform
-          perform_handler(event)
-        else
-          process_event(event)
-        end
+    def process_event
+      event = @input_queue.pop
+
+      case event.command
+      when :shutdown
+        shutdown_handler(event)
+        return false
+      when :perform
+        perform_handler(event)
+      else
+        raise Workers::UnknownEventError, "Unhandled event (#{event.inspect})."
       end
+
+      true
     rescue Exception => e
       exception_handler(e)
     end
 
     def shutdown_handler(event)
-      event.data.call(self) if event.data && event.data.is_a?(Proc)
+      event.data.call(self) if event.data
+
+      nil
     end
 
     def perform_handler(event)
       event.data.call
-    rescue Exception => e
-      exception_handler(e)
+
+      nil
     end
 
     def exception_handler(e)
-      raise ::Workers::EventLoopDiedError
-    end
+      if @exception_callback
+        @exception_callback.call(e)
+      end
 
-    def process_event(event)
-      raise ::Workers::UnknownEventError, "Unhandled event (#{event.inspect}). Subclass and override if you need custom events."
+      if @die_on_exception
+        @exception = e
+        raise e
+      end
+
+      nil
     end
   end
 end

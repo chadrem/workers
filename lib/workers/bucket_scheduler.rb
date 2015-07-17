@@ -38,9 +38,5 @@ module Workers
 
       return nil
     end
-
-    def alive?
-      return @schedulers.all? { |s| s.alive? }
-    end
   end
 end

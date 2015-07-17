@@ -11,6 +11,7 @@ module Workers
       @lock = Monitor.new
       @workers = Set.new
       @size = 0
+      @exception_callback = options[:on_exception]
 
       expand(options[:size] || Workers::Pool::DEFAULT_POOL_SIZE)
 
@@ -24,7 +25,17 @@ module Workers
     end
 
     def perform(&block)
-      enqueue(:perform, block)
+      e_callback = @exception_callback
+
+      safe_block = proc {
+        begin
+          block.call
+        rescue Exception => e
+          e_callback.call(e) if e_callback
+        end
+      }
+
+      enqueue(:perform, safe_block)
 
       return nil
     end
@@ -47,13 +58,11 @@ module Workers
       return results
     end
 
-    def dispose
+    def dispose(max_wait = nil)
       @lock.synchronize do
         shutdown
-        join
+        return join(max_wait)
       end
-
-      return nil
     end
 
     def inspect
@@ -79,7 +88,7 @@ module Workers
 
     def contract(count, &block)
       @lock.synchronize do
-        raise PoolSizeError, 'Count is too large.' if count > @size
+        raise Workers::PoolSizeError, 'Count is too large.' if count > @size
 
         count.times do
           callback = Proc.new do |worker|

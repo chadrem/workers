@@ -306,6 +306,12 @@ You can create additional schedulers as necessary:
       :pool => Workers::Pool.new        # The workers pool used to execute timer callbacks.
     )
 
+#### Bucket scheduler
+
+Workers comes with an specialized scheduler designed to work around lock contention.
+This is accomplished by using many pools (100 by default) each with a single worker.
+Timers are assigned to a scheduler by their ````hash```` value.
+
 ## Concurrency and performance
 
 Workers is tested with both JRuby and MRI (C Ruby).
