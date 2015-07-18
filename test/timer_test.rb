@@ -1,7 +1,20 @@
 require 'test_helper'
 
 class TimerTest < Minitest::Test
-  def test_basic_usage
+  def test_basic_usage_with_default_scheduler
+    perform_basic_test(Workers.scheduler)
+  end
+
+  def test_basic_usage_with_bucket_scheduler
+    scheduler = Workers::BucketScheduler.new
+    perform_basic_test(scheduler)
+  ensure
+    scheduler.dispose
+  end
+
+  private
+
+  def perform_basic_test(scheduler)
     counterA = 0
     counterB = 0
 
