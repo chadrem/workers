@@ -64,11 +64,11 @@ module Workers
 
     def start_event_loop
       while @run
-        process_next_event
+        process_event
       end
     end
 
-    def process_next_event
+    def process_event
       event = @input_queue.pop
       event_handler(event)
     rescue Exception => e
