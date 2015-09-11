@@ -87,6 +87,8 @@ module Workers
       else
         raise Workers::UnknownEventError, "Unhandled event (#{event.inspect})."
       end
+
+      nil
     end
 
     def shutdown_handler(event)
