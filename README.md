@@ -147,7 +147,7 @@ Failing to handle exceptions will result in dead workers so you must rescue them
 The Worker class is designed to be customized through inheritence and its event system:
 
     # Create a subclass that handles custom events.
-    # Super is called to handle built-in events such as ````:perform```` and ````:shutdown````.
+    # Super is called to handle built-in events such as perform and shutdown.
     class CustomWorker < Workers::Worker
       private
       def event_handler(event)
