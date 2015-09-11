@@ -10,6 +10,7 @@ module Workers
       @thread = Thread.new { start_event_loop }
       @exception_callback = options[:on_exception]
       @die_on_exception = options.include?(:die_on_exception) ? options[:die_on_exception] : true
+      @run = true
 
       nil
     end
@@ -62,26 +63,30 @@ module Workers
     private
 
     def start_event_loop
-      while process_event; end
+      while @run
+        process_next_event
+      end
     end
 
-    def process_event
+    def process_next_event
       event = @input_queue.pop
+      event_handler(event)
+    rescue Exception => e
+      exception_handler(e)
+    end
 
+    # Override this method to handle custom events.
+    # Make sure you call super(event) if want to built-in events to work.
+    def event_handler(event)
       case event.command
       when :shutdown
         shutdown_handler(event)
-        return false
+        @run = false
       when :perform
         perform_handler(event)
       else
         raise Workers::UnknownEventError, "Unhandled event (#{event.inspect})."
       end
-
-      true
-    rescue Exception => e
-      exception_handler(e)
-      true
     end
 
     def shutdown_handler(event)
