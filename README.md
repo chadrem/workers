@@ -337,7 +337,7 @@ Threads performing such IO will temporarily release the GIL and thus let another
 
 #### MRI 1.8.x or older (not supported)
 
-These old versions of Ruby used green threads (application layer threads) instead of operating system level threads.
+These old versions of Ruby use green threads (application layer threads) instead of operating system level threads.
 I recommend you upgrade to a newer version as I haven't tested Workers with them.
 They also aren't officially supported by the Ruby community at this point.
 
