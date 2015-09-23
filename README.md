@@ -42,7 +42,7 @@ Any exceptions while mapping with cause the entire map method to fail.
 If your block is prone to temporary failures (exceptions), you can retry it.
 
     Workers.map([1, 2, 3, 4, 5], :max_tries => 100) do |i|
-      if rand <= 0.5
+      if rand <= 0.8
         puts "Sometimes I like to fail while computing #{i} * #{i}."
         raise 'sad face'
       end
@@ -53,7 +53,7 @@ If your block is prone to temporary failures (exceptions), you can retry it.
 ## Tasks
 
 Tasks and task groups provide more flexibility than parallel map.
-The main benefit is that you get to decide how you want to handle exceptions.
+For example, you get to decide how you want to handle exceptions.
 
     # Create a task group (it contains a pool of worker threads).
     group = Workers::TaskGroup.new
@@ -61,8 +61,12 @@ The main benefit is that you get to decide how you want to handle exceptions.
     # Add tasks to the group.
     10.times do |i|
       10.times do |j|
-        group.add do
+        group.add(:max_tries => 10) do
           group.synchronize { puts "Computing #{i} * #{j}..." }
+          if rand <= 0.9
+            group.synchronize { puts "Sometimes I like to fail while computing #{i} * #{i}." }
+            raise 'sad face'
+          end
           i * j # Last statement executed is the result of the task.
         end
       end
@@ -104,9 +108,9 @@ This method uses a mutex so you can serialize portions of your tasks that aren't
 
     task = Workers::Task.new(
       :logger => nil,                   # Ruby logger instance.
-      :perform => proc {},              # Required option.  Block of code to run.
+      :on_perform => proc {},           # Required option.  Block of code to run.
       :args => [],                      # Array of arguments passed to the 'perform' block.
-      :finished => nil,                 # Callback to execute after attempting to run the task.
+      :on_finished => nil,              # Callback to execute after attempting to run the task.
       :max_tries => 1,                  # Number of times to try completing the task (without an exception).
     )
 
@@ -116,31 +120,26 @@ This method uses a mutex so you can serialize portions of your tasks that aren't
 
 The main purpose of the Worker class is to add an event system on top of Ruby's built-in Thread class.
 This greatly simplifies inter-thread communication.
-Workers are fairly low level and don't handle exceptions for you.
-Failing to handle exceptions will result in dead workers so you must rescue them in your application code.
+You must manually dispose of pools and workers so they get garbage collected.
 
     # Initialize a worker pool.
-    pool = Workers::Pool.new
+    pool = Workers::Pool.new(:on_exception => proc { |e|
+      puts "A worker encountered an exception: #{e.class}: #{e.message}"
+    })
 
     # Perform some work in the background.
     100.times do
       pool.perform do
-        begin
-          sleep(rand(3))
-          puts "Hello world from thread #{Thread.current.object_id}"
-        rescue Exception => e
-          puts "Oh no, my hello world failed!"
-        end
+        sleep(rand(3))
+        raise 'sad face' if rand < 0.5
+        puts "Hello world from thread #{Thread.current.object_id}"
       end
     end
 
-    # Tell the workers to shutdown.
-    pool.shutdown do
+    # Wait up to 30 seconds for the workers to cleanly shutdown (or forcefully kill them).
+    pool.dispose(30) do
       puts "Worker thread #{Thread.current.object_id} is shutting down."
     end
-
-    # Wait for the workers to shutdown.
-    pool.join
 
 #### Advanced
 
@@ -153,12 +152,8 @@ The Worker class is designed to be customized through inheritence and its event 
       def event_handler(event)
         case event.command
         when :my_custom
-          begin
-            puts "Worker received custom event: #{event.data}"
-            sleep(1)
-          rescue Exception => e
-            puts "This is a very sad program."
-          end
+          puts "Worker received custom event: #{event.data}"
+          sleep(1)
         else
           super(event)
         end
@@ -166,27 +161,25 @@ The Worker class is designed to be customized through inheritence and its event 
     end
 
     # Create a pool that uses your custom worker class.
-    pool = Workers::Pool.new(:worker_class => CustomWorker)
+    pool = Workers::Pool.new(:worker_class => CustomWorker, :on_exception => proc { |e|
+      puts "A worker encountered an exception: #{e.class}: e.message}"
+    })
 
     # Tell the workers to do some work using custom events.
     100.times do |i|
       pool.enqueue(:my_custom, i)
     end
 
-    # Tell the workers to shutdown.
-    pool.shutdown do
+    # Wait up to 30 seconds for the workers to cleanly shutdown (or forcefully kill them).
+    pool.dispose(30) do
       puts "Worker thread #{Thread.current.object_id} is shutting down."
     end
-
-    # Wait for the workers to shutdown.
-    pool.join
 
 #### Without pools
 
 In most cases you will be using a group of workers (a pool) as demonstrated above.
 In certain cases, you may want to use a worker directly without the pool.
-This effectively gives you direct access to a single event-driven thread.
-Note that you must handle exceptions yourself since you are working directly with the worker class:
+This gives you direct access to a single event-driven thread that won't die on an exception.
 
     # Create a single worker.
     worker = Workers::Worker.new
@@ -194,23 +187,20 @@ Note that you must handle exceptions yourself since you are working directly wit
     # Perform some work in the background.
     25.times do |i|
       worker.perform do
-        begin
-          sleep(0.1)
-          puts "Hello world from thread #{Thread.current.object_id}"
-        rescue Exception => e
-          puts "Oh no, my hello world failed!"
-        end
+        sleep(0.1)
+        puts "Hello world from thread #{Thread.current.object_id}"
       end
     end
 
-    # Tell the worker to shutdown.
-    worker.shutdown
+    # Wait up to 30 seconds for the worker to cleanly shutdown (or forcefully kill it).
+    worker.dispose(30)
 
 #### Options
 
     worker = Workers::Worker.new(
       :logger => nil,                   # Ruby Logger instance.
-      :input_queue => nil               # Ruby Queue used for input events.
+      :input_queue => nil,              # Ruby Queue used for input events.
+      :on_exception => nil              # Callback to execute on exception (exception passed as only argument).
     )
 
 ## Pools
@@ -240,6 +230,7 @@ Pools can be adjusted using the below methods:
       :size => 20,                      # Number of threads to create.
       :logger => nil,                   # Ruby Logger instance.
       :worker_class => Workers::Worker  # Class of worker to use for this pool.
+      :on_exception => nil              # Callback to execute on exception (exception passed as only argument).
     )
 
 ## Timers

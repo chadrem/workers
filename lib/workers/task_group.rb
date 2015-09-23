@@ -21,8 +21,8 @@ module Workers
     def add(options = {}, &block)
       state!(:initialized)
 
-      options[:finished] = method(:finished)
-      options[:perform] ||= block
+      options[:on_finished] = method(:finished)
+      options[:on_perform] ||= block
 
       @tasks << Workers::Task.new(options)
 
@@ -67,10 +67,11 @@ module Workers
 
       if (failure = failures[0])
         a = failure.input.inspect
+        c = failure.exception.class.to_s
         m = failure.exception.message
         b = failure.exception.backtrace.join("\n")
 
-        raise Workers::FailedTaskError, "At least one task failed. ARGS=#{a}, TRACE=#{m}\n#{b}\n----------\n"
+        raise Workers::FailedTaskError, "#{failures.count} task(s) failed (Only the first failure is shown).\nARGS=#{a}, EXCEPTION=#{c}: #{m}\n#{b}\n----------\n"
       end
 
       tasks.map { |t| t.result }

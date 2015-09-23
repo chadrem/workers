@@ -4,6 +4,8 @@ module Workers
 
     DEFAULT_POOL_SIZE = 20
 
+    attr_accessor :on_exception
+
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
       @worker_class = options[:worker_class] || Workers::Worker
@@ -11,7 +13,7 @@ module Workers
       @lock = Monitor.new
       @workers = Set.new
       @size = 0
-      @exception_callback = options[:on_exception]
+      @on_exception = options[:on_exception]
 
       expand(options[:size] || Workers::Pool::DEFAULT_POOL_SIZE)
 
@@ -48,8 +50,11 @@ module Workers
       results
     end
 
-    def dispose(max_wait = nil)
-      shutdown  
+    def dispose(max_wait = nil, &block)
+      shutdown do
+        block.call if block
+      end
+
       join(max_wait)
     end
 
@@ -66,8 +71,7 @@ module Workers
     def expand(count)
       @lock.synchronize do
         count.times do
-          worker = @worker_class.new(:input_queue => @input_queue, :die_on_exception => false,
-                                     :on_exception => @exception_callback, :logger => @logger)
+          worker = @worker_class.new(:input_queue => @input_queue, :on_exception => @on_exception, :logger => @logger)
           @workers << worker
           @size += 1
         end

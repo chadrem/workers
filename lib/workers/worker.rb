@@ -3,13 +3,13 @@ module Workers
     include Workers::Helpers
 
     attr_accessor :exception
+    attr_accessor :on_exception
 
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
       @input_queue = options[:input_queue] || Queue.new
       @thread = Thread.new { start_event_loop }
-      @exception_callback = options[:on_exception]
-      @die_on_exception = options.include?(:die_on_exception) ? options[:die_on_exception] : true
+      @on_exception = options[:on_exception]
       @run = true
 
       nil
@@ -105,8 +105,12 @@ module Workers
 
     def exception_handler(e)
       @exception = e
-      @exception_callback.call(e) if @exception_callback
-      raise(e) if @die_on_exception
+
+      begin
+        @on_exception.call(e) if @on_exception
+      rescue Exception => e2
+        STDERR.puts "Your #{self.class.to_s} exception handler raised an error. Fix your handler!\n#{e2.class.to_s}: #{e2.message}\n#{e2.backtrace.join("\n")}"
+      end
 
       nil
     end

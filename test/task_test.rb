@@ -8,13 +8,13 @@ class TaskTest < Minitest::Test
 
     task = Workers::Task.new(
       :input => [1, 2, 3],
-      :perform => proc { |input|
+      :on_perform => proc { |input|
         counter += 1
         raise 'uh oh' if counter < 3
         perform_success = true
         input.map { |i| i**2 }
       },
-      :finished => proc { |t|
+      :on_finished => proc { |t|
         finished_success = true
         assert_equal(task, t)
       },
@@ -33,10 +33,10 @@ class TaskTest < Minitest::Test
     finished_success = false
 
     task = Workers::Task.new(
-      :perform => proc {
+      :on_perform => proc {
         raise 'uh oh'
       },
-      :finished => proc {
+      :on_finished => proc {
         finished_success = true
       },
       :max_tries => 10

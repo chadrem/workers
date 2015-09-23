@@ -12,8 +12,8 @@ module Workers
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
       @input = options[:input] || []
-      @perform = options[:perform] || raise(Workers::MissingCallbackError, 'Perform callback is required.')
-      @finished = options[:finished]
+      @on_perform = options[:on_perform] || raise(Workers::MissingCallbackError, 'on_perform callback is required.')
+      @on_finished = options[:on_finished]
       @max_tries = options[:max_tries] || 1
       @state = :initialized
       @tries = 0
@@ -32,7 +32,7 @@ module Workers
         @tries += 1
 
         begin
-          @result = @perform.call(@input)
+          @result = @on_perform.call(@input)
           @state = :succeeded
           @exception = nil
         rescue Exception => e
@@ -41,7 +41,7 @@ module Workers
         end
       end
 
-      @finished.call(self)
+      @on_finished.call(self)
 
       nil
     end
