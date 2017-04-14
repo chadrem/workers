@@ -8,9 +8,9 @@ module Workers
     def initialize(options = {})
       @logger = Workers::LogProxy.new(options[:logger])
       @input_queue = options[:input_queue] || Queue.new
-      @thread = Thread.new { start_event_loop }
       @on_exception = options[:on_exception]
       @run = true
+      @thread = Thread.new { start_event_loop }
 
       nil
     end
