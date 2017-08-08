@@ -109,7 +109,7 @@ This method uses a mutex so you can serialize portions of your tasks that aren't
     task = Workers::Task.new(
       :logger => nil,                   # Ruby logger instance.
       :on_perform => proc {},           # Required option.  Block of code to run.
-      :args => [],                      # Array of arguments passed to the 'perform' block.
+      :input => [],                     # Array of arguments passed to the 'perform' block.
       :on_finished => nil,              # Callback to execute after attempting to run the task.
       :max_tries => 1,                  # Number of times to try completing the task (without an exception).
     )
