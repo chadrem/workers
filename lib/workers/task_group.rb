@@ -42,7 +42,13 @@ module Workers
           @pool.perform { task.run }
         end
 
-        @conditional.wait(@internal_lock)
+        loop do
+          @conditional.wait(@internal_lock)
+          # The wait can return even if nothing called @conditional.signal,
+          # so we need to check to see if the condition actually changed.
+          # See https://github.com/chadrem/workers/issues/7
+          break if @finished_count >= @tasks.count
+        end
       end
 
       @tasks.all? { |t| t.succeeded? }
