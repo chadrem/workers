@@ -47,7 +47,7 @@ module Workers
           # The wait can return even if nothing called @conditional.signal,
           # so we need to check to see if the condition actually changed.
           # See https://github.com/chadrem/workers/issues/7
-          break if @finished_count >= @tasks.count
+          break if all_tasks_finished?
         end
       end
 
@@ -104,10 +104,14 @@ module Workers
     def finished(task)
       @internal_lock.synchronize do
         @finished_count += 1
-        @conditional.signal if @finished_count >= @tasks.count
+        @conditional.signal if all_tasks_finished?
       end
 
       nil
+    end
+
+    def all_tasks_finished?
+      @finished_count >= @tasks.count
     end
   end
 end
