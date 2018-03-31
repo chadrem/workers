@@ -347,7 +347,7 @@ Both the number of buckets and the number of workers assigned to each bucket are
 scheduler = Workers::BucketScheduler.new
 ```
 
-#### Note on Ruby's main thread
+#### Ruby's main thread
 
 Ruby's main thread (the default thread) will terminate the Ruby process when it exits. Since asynchronouse code (such as the `Timer` and `Scheduler` classes) don't block the main thread, you may run into a problem where your script exits before your timers fire. If this is the case, you will need to provide a busy loop to keep the main thread from exiting:
 
