@@ -326,9 +326,9 @@ A good starting point is 1x - 2x the number of cores for CPU bound apps.
 For IO bound apps you will need to do some benchmarking to figure out what is best for you.
 A good starting point is 4x - 10x the number of cores for IO bound apps.
 
-#### MRI 1.9.x or newer (supported)
+#### MRI 2.2.0 or newer (supported)
 
-MRI 1.9 and above use real operating system threads with a global interpreter lock (GIL).
+MRI 2.2.0 and above use real operating system threads with a global interpreter lock (GIL).
 The bad news is that due to the GIL, only one thread can execute Ruby code at a given point in time.
 This means your app will be CPU bound to a single core.
 The good news is that IO bound applications will still see huge benefits from Workers.
