@@ -76,11 +76,12 @@ module Workers
       end
 
       overdue.each do |timer|
+        timer.reset
+
         @pool.perform do
           timer.fire
         end
 
-        timer.reset
         @schedule << timer if timer.repeat
       end
 
